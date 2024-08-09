@@ -5,8 +5,8 @@
  */
 
 import React from 'react';
-import { OramaIcon } from './OramaIcon';
+import { Puzzle } from '@strapi/icons';
 
-const PluginIcon = () => <OramaIcon />;
+const PluginIcon = () => <Puzzle />;
 
 export default PluginIcon;

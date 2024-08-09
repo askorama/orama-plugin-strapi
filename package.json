@@ -1,30 +1,24 @@
 {
-  "name": "@orama/orama-plugin-strapi",
+  "name": "orama-plugin-strapi",
   "version": "0.0.0",
   "description": "This is the description of the plugin.",
   "strapi": {
-    "name": "orama",
-    "description": "Description of orama-plugin-strapi plugin",
-    "kind": "plugin"
+    "name": "orama-plugin-strapi",
+    "description": "Description of Orama Plugin Strapi plugin",
+    "kind": "plugin",
+    "displayName": "Orama Plugin Strapi"
   },
   "dependencies": {
-    "@strapi/strapi": "^4.6.0",
     "@strapi/design-system": "^1.6.3",
     "@strapi/helper-plugin": "^4.6.0",
     "@strapi/icons": "^1.6.3",
     "prop-types": "^15.7.2"
   },
   "devDependencies": {
-    "@strapi/typescript-utils": "^4.6.0",
-    "@types/react": "^17.0.53",
-    "@types/react-dom": "^18.0.28",
-    "@types/react-router-dom": "^5.3.3",
-    "@types/styled-components": "^5.1.32",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^5.3.4",
-    "styled-components": "^5.3.6",
-    "typescript": "5.0.4"
+    "styled-components": "^5.3.6"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",
@@ -43,10 +37,6 @@
   "engines": {
     "node": ">=18.0.0 <=20.x.x",
     "npm": ">=6.0.0"
-  },
-  "scripts": {
-    "develop": "tsc -p tsconfig.server.json -w",
-    "build": "tsc -p tsconfig.server.json"
   },
   "license": "MIT"
 }

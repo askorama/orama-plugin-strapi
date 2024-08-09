@@ -1,8 +1,0 @@
-.env.local
-
-.idea
-.vscode
-
-node_modules
-
-dist
