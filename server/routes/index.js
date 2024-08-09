@@ -2,9 +2,19 @@ module.exports = [
   {
     method: 'GET',
     path: '/',
-    handler: 'myController.index',
+    handler: 'contentTypesController.index',
     config: {
       policies: [],
+      auth: false
+    },
+  },
+  {
+    method: 'GET',
+    path: '/get-content-types',
+    handler: 'contentTypesController.getContentTypes',
+    config: {
+      policies: [],
+      auth: false
     },
   },
 ];

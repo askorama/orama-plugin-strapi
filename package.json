@@ -1,9 +1,9 @@
 {
-  "name": "orama-plugin-strapi",
-  "version": "0.0.0",
+  "name": "@orama/plugin-strapi",
+  "version": "0.0.1-rc1",
   "description": "This is the description of the plugin.",
   "strapi": {
-    "name": "orama-plugin-strapi",
+    "name": "orama",
     "description": "Description of Orama Plugin Strapi plugin",
     "kind": "plugin",
     "displayName": "Orama Plugin Strapi"
