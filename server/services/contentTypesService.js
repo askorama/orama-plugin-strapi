@@ -1,5 +1,8 @@
 'use strict';
 
+// Check if all of this is necessary
+// We could just pick 'api::' content types
+
 const IGNORED_PLUGINS = ['admin', 'upload', 'i18n']
 const IGNORED_CONTENT_TYPES = [
   'plugin::users-permissions.permission',
@@ -37,4 +40,8 @@ module.exports = ({ strapi }) => ({
 
     return Object.keys(contentTypes)
   },
+
+  async getEntries({ contentType }) {
+    return await strapi.query(contentType).findMany();
+  }
 });

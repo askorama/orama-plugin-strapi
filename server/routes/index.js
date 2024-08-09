@@ -17,4 +17,13 @@ module.exports = [
       auth: false
     },
   },
+  {
+    method: 'GET',
+    path: '/get-content-type-entries',
+    handler: 'contentTypesController.getContentTypeEntries',
+    config: {
+      policies: [],
+      auth: false
+    },
+  },
 ];
