@@ -1,27 +1,8 @@
 'use strict';
 
-// Check if all of this is necessary
-// We could just pick 'api::' content types
-
-const IGNORED_PLUGINS = ['admin', 'upload', 'i18n']
-const IGNORED_CONTENT_TYPES = [
-  'plugin::users-permissions.permission',
-  'plugin::users-permissions.role',
-  'plugin::content-releases.release',
-  'plugin::content-releases.release-action',
-  'plugin::users-permissions.user'
-]
-
-const removeIgnoredAPIs = ({ contentTypes }) => {
-  const contentTypeUIDs = Object.keys(contentTypes)
-
-  return contentTypeUIDs.reduce((sanitized, contentType) => {
-    if (
-      !(
-        IGNORED_PLUGINS.includes(contentTypes[contentType].plugin) ||
-        IGNORED_CONTENT_TYPES.includes(contentType)
-      )
-    ) {
+const filterAPIs = ({ contentTypes }) => {
+  return Object.keys(contentTypes).reduce((sanitized, contentType) => {
+    if (contentType.startsWith('api::')) {
       sanitized[contentType] = contentTypes[contentType]
     }
     return sanitized
@@ -29,16 +10,18 @@ const removeIgnoredAPIs = ({ contentTypes }) => {
 }
 
 module.exports = ({ strapi }) => ({
-  getWelcomeMessage() {
-    return 'Welcome to Strapi 🚀';
-  },
-
-  getContentTypesUID() {
-    const contentTypes = removeIgnoredAPIs({
+  getContentTypes() {
+    const contentTypes = filterAPIs({
       contentTypes: strapi.contentTypes,
-    })
+    });
 
-    return Object.keys(contentTypes)
+    return Object.entries(contentTypes).map(([contentType, c]) => ({
+      contentType,
+      collection: c.info.displayName,
+      status: 'draft',
+      indexId: undefined,
+      documents_count: 0,
+    }));
   },
 
   async getEntries({ contentType }) {
