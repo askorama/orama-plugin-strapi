@@ -1,10 +1,4 @@
 // @ts-nocheck
-/*
- *
- * HomePage
- *
- */
-
 import React from 'react';
 import {
   Box,
@@ -14,7 +8,6 @@ import {
   TabPanels,
   Tabs
 } from '@strapi/design-system';
-// @ts-ignore
 import { Layout, BaseHeaderLayout, ContentLayout } from '@strapi/design-system/Layout';
 
 // import PropTypes from 'prop-types';
@@ -27,7 +20,7 @@ const HomePage = () => {
     <Layout>
       <BaseHeaderLayout title="Orama Plugin" subtitle="Index Strapi contents on Orama Cloud." as="h2" />
       <ContentLayout>
-        <Box padding={8} margin={10} background="neutral">
+        <Box background="neutral">
           <TabGroup label="Some stuff for the label" id="tabs">
             <Tabs>
               <Tab>Collections</Tab>
