@@ -5,10 +5,12 @@ import {
   Box,
   Button,
   Flex,
+  Tag,
   Td,
   Tr,
   Typography,
 } from '@strapi/design-system'
+import { Information } from '@strapi/icons'
 
 const TableColumns = ({
   entry,
@@ -37,18 +39,19 @@ const TableColumns = ({
       </Td>
       {/* Status */}
       <Td>
-        <Typography textColor="neutral800">
-          {entry.status === 'deployed' ? 'Online' : 'Draft'}
-        </Typography>
+        <Tag icon={<Information aria-hidden />} disabled>{entry.status}</Tag>
       </Td>
       {/* Index ID */}
       <Td>
-        <Typography textColor="neutral800">{entry.indexId}</Typography>
+        <Typography textColor="neutral800">
+          {entry.indexId && 
+            <a href={`https://cloud.orama.com/indexes/view/${entry.indexId}`} target='_blank'>{entry.indexId}</a>}
+        </Typography>
       </Td>
       {/* Documents */}
       <Td>
         <Typography textColor="neutral800">
-          {entry.documents_count || 0}
+          {entry.documents_count}
         </Typography>
       </Td>
       <Td>
@@ -57,7 +60,7 @@ const TableColumns = ({
             {entry.indexed && (
               <Button
                 onClick={() =>
-                  updateCollection({ contentType: entry.contentType })
+                  console.log('Update collection', entry.contentType)
                 }
                 size="S"
                 variant="secondary"

@@ -1,6 +1,14 @@
 module.exports = [
   {
     method: 'GET',
+    path: '/collections',
+    handler: 'collectionsController.getCollections',
+    config: {
+      policies: [],
+    },
+  },
+  {
+    method: 'GET',
     path: '/content-types',
     handler: 'contentTypesController.getContentTypes',
     config: {
