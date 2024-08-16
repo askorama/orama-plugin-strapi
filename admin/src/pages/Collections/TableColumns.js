@@ -27,8 +27,10 @@ const TableColumns = ({
           aria-label={`Select ${entry.collection}`}
           onValueChange={() => {
             if (entry.indexed)
-              deleteCollection({ contentType: entry.contentType })
-            else addCollection({ contentType: entry.contentType })
+              console.log('Delete collection', { contentType: entry.contentType })
+            else {
+              console.log('Add collection', { contentType: entry.contentType })
+            }
           }}
           value={entry.indexed}
         />
