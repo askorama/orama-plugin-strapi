@@ -71,24 +71,20 @@ const HomePage = () => {
   };
 
   const handleChange = ({ name, value }) => {
-    console.log('updating...', {
-      before: currentCollection,
-      data: { [name]: value }
-    });
     setCurrentCollection({ ...currentCollection, [name]: value });
   };
 
   const handleCreate = async () => {
     setIsSaving(true);
     try {
-      await post(`/${pluginId}/collections`, currentCollection);
+      const newCollection = await post(`/${pluginId}/collections`, currentCollection);
       toggleNotification({
         type: 'success',
         message: 'Collection created successfully.',
       });
-
-      // TODO: update collections state
-
+      setCollections((prevCollections) =>
+        [...prevCollections, newCollection]
+      );
       setIsModalVisible(false);
     } catch (err) {
       console.error(err);
@@ -109,7 +105,6 @@ const HomePage = () => {
         type: 'success',
         message: 'Collection updated successfully.',
       });
-      // Update the collection in the list
       setCollections((prevCollections) =>
         prevCollections.map((col) =>
           col.id === currentCollection.id ? currentCollection : col
@@ -161,6 +156,7 @@ const HomePage = () => {
               <CollectionsTable
                 collections={collections}
                 onEditRow={handleEditClick}
+                onCreateRecord={handleCreateClick}
               />
               {isModalVisible && (
                 <ModalLayout
@@ -168,7 +164,7 @@ const HomePage = () => {
                   labelledBy="edit-collection-modal"
                 >
                   <ModalHeader>
-                    <h2 id="edit-collection-modal">Edit Collection</h2>
+                    <Typography>Edit Collection</Typography>
                   </ModalHeader>
                   <ModalBody>
                     <CollectionForm
@@ -194,34 +190,6 @@ const HomePage = () => {
               )}
             </>
           }
-          {/*
-           <TabGroup label="Some stuff for the label" id="tabs">
-            <Tabs>
-              <Tab>Collections</Tab>
-              <Tab>Settings</Tab>
-            </Tabs>
-            <TabPanels>
-              <TabPanel>
-                <Box color="neutral800" padding={4} background="neutral0">
-                  <Flex gap={1} direction="column" alignItems="flex-start" marginBottom={5}>
-                    <Typography variant="beta">Manage collections</Typography>
-                    <Typography variant="omega" textColor="neutral600">Configure the content types that should be collected and indexed on Orama Cloud.</Typography>
-                  </Flex>
-                  <CollectionsManager />
-                </Box>
-              </TabPanel>
-              <TabPanel>
-                <Box color="neutral800" padding={4} background="neutral0">
-                  <Flex gap={1} direction="column" alignItems="flex-start" marginBottom={5}>
-                    <Typography variant="beta">Manage indexes</Typography>
-                    <Typography variant="omega" textColor="neutral600">Configure the when a new deployment should be triggered on Orama Cloud.</Typography>
-                  </Flex>
-                  <SettingsManager />
-                </Box>
-              </TabPanel>
-            </TabPanels>
-          </TabGroup>
-          */}
         </Box>
       </ContentLayout>
     </Layout>

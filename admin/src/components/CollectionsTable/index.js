@@ -30,26 +30,13 @@ const hook = {
   }
 }
 
-const CollectionsTable = ({ collections, onEditRow, onDeleteRow }) => {
+const CollectionsTable = ({ collections, onEditRow, onCreateRecord }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentCollection, setCurrentCollection] = useState(null);
   const [formEditMode, setFormEditMode] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { get, post, put } = useFetchClient();
   const toggleNotification = useNotification();
-
-
-  const handleCreateClick = () => {
-    setCurrentCollection({});
-    setFormEditMode(false);
-    setIsModalVisible(true);
-  }
-
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCurrentCollection({ ...currentCollection, [name]: value });
-  };
 
 
   const formatLastDeployedAt = (date) => {
@@ -71,17 +58,12 @@ const CollectionsTable = ({ collections, onEditRow, onDeleteRow }) => {
           <Tr>
             <Th>
               <Typography variant="sigma">
-                NAME
-              </Typography>
-            </Th>
-            <Th>
-              <Typography variant="sigma">
                 CONTENT TYPE
               </Typography>
             </Th>
             <Th>
               <Typography variant="sigma">
-                ORAMA INDEX
+                ORAMA INDEX ID
               </Typography>
             </Th>
             <Th>
@@ -107,15 +89,11 @@ const CollectionsTable = ({ collections, onEditRow, onDeleteRow }) => {
         <Tbody>
           {collections.map((entry, i) => (
             <Tr key={entry.id}>
-              {/* Collection Name */}
-              <Td>
-                <Typography textColor="neutral800">{entry.name}</Typography>
-              </Td>
               {/* Content Type */}
               <Td>
                 <Flex>
                   <Status variant="secondary" size="S" showBullet={false}>
-                    <Typography textColor="secondary800">{entry.entity}</Typography>
+                    <Typography>{entry.entity}</Typography>
                   </Status>
                 </Flex>
               </Td>
@@ -165,20 +143,6 @@ const CollectionsTable = ({ collections, onEditRow, onDeleteRow }) => {
                     {onEditRow && (<Button onClick={() => onEditRow(entry)} size="S" variant="secondary">
                       Edit
                     </Button>)}
-                    {onDeleteRow && (<Button onClick={() => onDeleteRow(entry)} size="S" variant="secondary">
-                      Delete
-                    </Button>)}
-                    {entry.indexed && (
-                      <Button
-                        onClick={() =>
-                          console.log('Update collection', entry.contentType)
-                        }
-                        size="S"
-                        variant="secondary"
-                      >
-                        Update
-                      </Button>
-                    )}
                   </Box>
                 </Flex>
               </Td>
@@ -189,7 +153,10 @@ const CollectionsTable = ({ collections, onEditRow, onDeleteRow }) => {
       {collections.length === 0 && (
         <EmptyStateLayout
           content="You don't have any collection yet."
-          action={<Button variant="secondary" startIcon={<Plus />} onClick={handleCreateClick}>Create your first collection</Button>} />
+          action={<Button
+            variant="secondary"
+            startIcon={<Plus />}
+            onClick={onCreateRecord}>Create your first collection</Button>} />
       )}
 
     </>
