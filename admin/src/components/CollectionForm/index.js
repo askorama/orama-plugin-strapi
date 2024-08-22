@@ -39,6 +39,23 @@ const CollectionForm = ({ collection, editMode, contentTypeOptions, onFieldChang
                 <Radio value="live">Live update</Radio>
                 <Radio value="cron">Scheduled job</Radio>
             </RadioGroup>
+            {collection?.updateHook === 'cron' && <SingleSelect
+                required
+                onChange={(value) => onFieldChange({ name: 'updateCron', value })}
+                label="Deploy Frequency"
+                placeholder="Set deploy frequency"
+                name="updateCron"
+                id="updateCron"
+                hint="Set the frequency to update this collection"
+                value={collection?.updateCron || '*/30 * * * *'}
+            >
+                <SingleSelectOption key="1" value="*/1 * * * *">Every minute (only for testing)</SingleSelectOption>
+                <SingleSelectOption key="1" value="*/30 * * * *">Every 30 minutes</SingleSelectOption>
+                <SingleSelectOption key="2" value="0 * * * *">Every hour</SingleSelectOption>
+                <SingleSelectOption key="3" value="0 0 * * *">Daily</SingleSelectOption>
+                <SingleSelectOption key="4" value="0 0 * * 0">Weekly</SingleSelectOption>
+                <SingleSelectOption key="5" value="0 0 1 * *">Monthly</SingleSelectOption>
+            </SingleSelect>}
         </Flex>
     )
 }

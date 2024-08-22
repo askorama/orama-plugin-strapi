@@ -20,10 +20,12 @@
   },
   "attributes": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "indexId": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "status": {
       "type": "enumeration",
@@ -35,7 +37,8 @@
       "default": "outdated"
     },
     "entity": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "updateHook": {
       "type": "enumeration",
@@ -44,6 +47,10 @@
         "cron"
       ],
       "default": "live"
+    },
+    "updateCron": {
+      "type": "string",
+      "default": "*/30 * * * *"
     },
     "deployedAt": {
       "type": "datetime"
