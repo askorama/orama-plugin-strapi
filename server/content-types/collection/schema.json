@@ -1,0 +1,52 @@
+{
+  "kind": "collectionType",
+  "collectionName": "collections",
+  "info": {
+    "singularName": "collection",
+    "pluralName": "collections",
+    "displayName": "Collections"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "comment": ""
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    },
+    "content-type-builder": {
+      "visible": true
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "indexId": {
+      "type": "string"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "outdated",
+        "updating",
+        "updated"
+      ],
+      "default": "outdated"
+    },
+    "entity": {
+      "type": "string"
+    },
+    "updateHook": {
+      "type": "enumeration",
+      "enum": [
+        "live",
+        "cron"
+      ],
+      "default": "live"
+    },
+    "deployedAt": {
+      "type": "datetime"
+    }
+  }
+}

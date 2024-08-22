@@ -17,12 +17,8 @@ module.exports = ({ strapi }) => {
       });
 
       return Object.entries(contentTypes).map(([contentType, c]) => ({
-        contentType,
-        collection: c.info.displayName,
-        indexed: false,
-        status: 'Not Indexed',
-        indexId: undefined,
-        documents_count: undefined,
+        value: contentType,
+        label: c.info.displayName,
       }));
     },
 
