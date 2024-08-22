@@ -9,7 +9,7 @@ module.exports = ({ strapi }) => ({
   },
 
   async processLiveUpdate(collection, entity) {
-    console.log(`Processing live update for ${collection.entity} with indexId ${collection.indexId}:`, entity);
+    console.log(`Processing live update for ${collection.entity} with indexId ${collection.indexId}`);
   },
 
   async processScheduledUpdate(collection) {

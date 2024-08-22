@@ -23,7 +23,18 @@ module.exports = async ({ strapi }) => {
       });
 
       if (collection) {
+        await collectionService.update(collection.id, {
+          ...collection,
+          status: 'updating'
+        });
+
         await oramaService.processLiveUpdate(collection, result);
+
+        await collectionService.update(collection.id, {
+          ...collection,
+          status: 'updated',
+          deployedAt: new Date()
+        });
       }
     }
     strapi.db.lifecycles.subscribe({
