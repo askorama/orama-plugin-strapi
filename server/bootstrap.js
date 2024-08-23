@@ -18,16 +18,16 @@ module.exports = async ({ strapi }) => {
     strapi.db.lifecycles.subscribe({
       models: [...new Set(liveUpdates.map(c => c.entity))],
       async afterCreate(event) {
-        await handleLiveUpdates(event);
+        await handleLiveUpdates(event, 'create');
       },
       async afterUpdate(event) {
-        await handleLiveUpdates(event);
+        await handleLiveUpdates(event, 'update');
       },
       async afterDelete(event) {
-        await handleLiveUpdates(event);
+        await handleLiveUpdates(event, 'delete');
       },
     });
-    async function handleLiveUpdates(event) {
+    async function handleLiveUpdates(event, action) {
       const { model, result } = event;
 
       const collection = await strapi.query('plugin::orama.collection').findOne({
@@ -48,7 +48,7 @@ module.exports = async ({ strapi }) => {
       }
 
       if (collection.status === 'outdated') {
-        oramaService.processLiveUpdate(collection, result);
+        oramaService.processLiveUpdate(collection, result, action);
       } else {
         oramaService.processLiveUpdate(await collectionService.update(collection.id, { status: 'outdated' }), result);
       }
@@ -70,10 +70,9 @@ module.exports = async ({ strapi }) => {
       ['orama-update-collection-' + collection.id]: {
         task: async () => {
           try {
-            console.log('Updating collection:', collection);
             oramaService.processScheduledUpdate(collection);
           } catch (error) {
-            console.error(error);
+            strapi.log.error(error);
           }
         },
         options: {
