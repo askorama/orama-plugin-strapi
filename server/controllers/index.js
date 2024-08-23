@@ -1,7 +1,9 @@
 'use strict';
 
-const contentTypesController = require('./contentTypesController');
+const collectionsController = require('./collections');
+const contentTypesController = require('./content-types');
 
 module.exports = {
-  contentTypesController,
+  collectionsController,
+  contentTypesController
 };

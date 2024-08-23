@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { prefixPluginTranslations } from '@strapi/helper-plugin';
 import pluginPkg from '../../package.json';
 import pluginId from './pluginId';
@@ -36,7 +37,7 @@ export default {
     });
   },
 
-  bootstrap(app) {},
+  bootstrap(app) { },
   async registerTrads({ locales }) {
     const importedTrads = await Promise.all(
       locales.map((locale) => {

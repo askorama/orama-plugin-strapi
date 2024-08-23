@@ -1,0 +1,56 @@
+{
+  "kind": "collectionType",
+  "collectionName": "orama_collections",
+  "info": {
+    "singularName": "collection",
+    "pluralName": "collections",
+    "displayName": "Collections"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "comment": ""
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    },
+    "content-type-builder": {
+      "visible": true
+    }
+  },
+  "attributes": {
+    "indexId": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "outdated",
+        "updating",
+        "updated"
+      ],
+      "default": "outdated"
+    },
+    "entity": {
+      "type": "string",
+      "required": true
+    },
+    "updateHook": {
+      "type": "enumeration",
+      "enum": [
+        "live",
+        "cron"
+      ],
+      "default": "live"
+    },
+    "updateCron": {
+      "type": "string",
+      "default": "0 * * * *"
+    },
+    "deployedAt": {
+      "type": "datetime"
+    }
+  }
+}
