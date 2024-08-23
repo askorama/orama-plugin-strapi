@@ -6,20 +6,18 @@ module.exports = ({ strapi }) => {
   const contentTypesService = strapi.plugin('orama').service('contentTypesService');
   const collectionService = strapi.plugin('orama').service('collectionsService');
   const privateApiKey = strapi.config.get('plugin.orama.privateApiKey');
-  const oramaCloudManager = new CloudManager({
-    api_key: privateApiKey,
-  })
+
+  async function snapshotIndex({ indexId, documents }) {
+    const oramaCloudManager = new CloudManager({ api_key: privateApiKey });
+    const index = oramaCloudManager.index(indexId)
+    await index.snapshot([]);
+    await index.snapshot(documents);
+    await index.deploy();
+
+    strapi.log.info(`Index ${indexId} snapshot created and deployed`);
+  }
 
   return {
-    async snapshotIndex({ indexId, documents }) {
-      const index = oramaCloudManager.index(indexId)
-      await index.snapshot([]);
-      await index.snapshot(documents);
-      await index.deploy();
-
-      strapi.log.info(`Index ${indexId} snapshot created and deployed`);
-    },
-
     async processLiveUpdate({ id }, record, action) {
       const collection = await collectionService.findOne(id);
 
@@ -55,12 +53,9 @@ module.exports = ({ strapi }) => {
         return;
       }
 
-      await this.snapshotIndex({
+      await snapshotIndex({
         indexId: collection.indexId,
-        documents: entries.map(record => ({
-          objectID: record.id,
-          ...record
-        }))
+        documents: entries.map(record => ({ ...record }))
       });
 
       strapi.log.debug(`Live update for ${collection.entity} with indexId ${collection.indexId} completed`);
@@ -106,12 +101,9 @@ module.exports = ({ strapi }) => {
         return;
       }
 
-      await this.snapshotIndex({
+      await snapshotIndex({
         indexId: collection.indexId,
-        documents: entries.map(record => ({
-          objectID: record.id,
-          ...record
-        }))
+        documents: entries.map(record => ({ ...record }))
       });
 
       strapi.log.debug(`Scheduled update for ${collection.entity} with indexId ${collection.indexId} completed`);
