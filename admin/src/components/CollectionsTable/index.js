@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import { DateTime } from 'luxon';
-import { Box, Button, EmptyStateLayout, Flex, LinkButton, Status, Table, Tbody, Td, Th, Thead, Tr, Typography, VisuallyHidden } from '@strapi/design-system'
-import { ExternalLink, Plus } from '@strapi/icons'
+import { Button, EmptyStateLayout, Flex, LinkButton, Status, Table, Tbody, Td, Th, Thead, Tr, Typography, VisuallyHidden } from '@strapi/design-system'
+import { ExternalLink, Plus, Refresh } from '@strapi/icons'
 
 const status = {
   updated: {
@@ -27,7 +27,7 @@ const hook = {
   }
 }
 
-const CollectionsTable = ({ collections, onEditRow, onCreateRecord }) => {
+const CollectionsTable = ({ collections, onEditAction, onDeployAction, onCreateAction }) => {
 
   const formatLastDeployedAt = (date) => {
     if (!date)
@@ -63,15 +63,18 @@ const CollectionsTable = ({ collections, onEditRow, onCreateRecord }) => {
             </Th>
             <Th>
               <Typography variant="sigma">
-                HOOK
+                UPDATE HOOK
               </Typography>
             </Th>
             <Th>
               <Typography variant="sigma">
-                LAST UPDATED
+                LAST DEPLOYMENT
               </Typography>
             </Th>
             <Th>
+              <Typography variant="sigma">
+                Actions
+              </Typography>
               <VisuallyHidden>Actions</VisuallyHidden>
             </Th>
           </Tr>
@@ -96,7 +99,7 @@ const CollectionsTable = ({ collections, onEditRow, onCreateRecord }) => {
                     size="S"
                     variant="secondary"
                     style={{ whiteSpace: 'nowrap', textDecoration: 'none' }}
-                    endIcon={<ExternalLink />}
+                    endIcon={<ExternalLink width={10} />}
                   >
                     {entry.indexId}
                   </LinkButton>}
@@ -129,12 +132,19 @@ const CollectionsTable = ({ collections, onEditRow, onCreateRecord }) => {
               </Td>
               {/* Actions */}
               <Td>
-                <Flex>
-                  <Box paddingLeft={1}>
-                    {onEditRow && (<Button onClick={() => onEditRow(entry)} size="S" variant="secondary">
-                      Edit
-                    </Button>)}
-                  </Box>
+                <Flex gap={2}>
+                  {onEditAction && (<Button onClick={() => onEditAction(entry)} size="S" variant="secondary">
+                    Edit
+                  </Button>)}
+                  {onDeployAction && (<Button
+                    onClick={() => onDeployAction(entry)}
+                    size="S"
+                    variant="success-light"
+                    startIcon={<Refresh />}
+                    loading={entry.status === 'updating'}
+                  >
+                    Deploy
+                  </Button>)}
                 </Flex>
               </Td>
             </Tr>
@@ -148,7 +158,7 @@ const CollectionsTable = ({ collections, onEditRow, onCreateRecord }) => {
           action={<Button
             variant="secondary"
             startIcon={<Plus />}
-            onClick={onCreateRecord}>Create your first collection</Button>} />
+            onClick={onCreateAction}>Configure your first Orama index</Button>} />
       )}
 
     </>

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -11,19 +10,14 @@ import {
   ModalFooter,
   ModalHeader,
   ModalLayout,
-  Tab,
-  TabGroup,
-  TabPanel,
-  TabPanels,
-  Tabs,
+  Layout,
+  ContentLayout,
   Typography
 } from '@strapi/design-system';
-import { Layout, BaseHeaderLayout, ContentLayout } from '@strapi/design-system/Layout';
-import CollectionsTable from '../../components/CollectionsTable';
-import SettingsManager from '../../components/SettingsManager';
-import pluginId from '../../pluginId';
-import { ArrowRight, ExternalLink, Plus } from '@strapi/icons';
+import { ExternalLink, Plus } from '@strapi/icons';
 import { useFetchClient, useNotification } from '@strapi/helper-plugin';
+import CollectionsTable from '../../components/CollectionsTable';
+import pluginId from '../../pluginId';
 import CollectionForm from '../../components/CollectionForm';
 
 const HomePage = () => {
@@ -32,6 +26,7 @@ const HomePage = () => {
   const [contentTypes, setContentTypes] = useState([]);
   const [collections, setCollections] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [currentCollection, setCurrentCollection] = useState(null);
   const [formEditMode, setFormEditMode] = useState(false);
   const { get, post, put } = useFetchClient();
@@ -68,6 +63,11 @@ const HomePage = () => {
     setCurrentCollection(collection);
     setFormEditMode(true);
     setIsModalVisible(true);
+  };
+
+  const handleDeployClick = (collection) => {
+    setCurrentCollection(collection);
+    setShowConfirmationModal(true);
   };
 
   const handleChange = ({ name, value }) => {
@@ -122,8 +122,13 @@ const HomePage = () => {
     }
   };
 
+  const handleDeploy = async () => {
+    setShowConfirmationModal(false);
+    console.log('Deploying collection:', currentCollection);
+  };
+
   return (
-    <Layout>
+    <Layout sideNav={null}>
       <HeaderLayout
         title="Orama"
         subtitle="Manage collections to sync content types with your indexes on Orama."
@@ -156,8 +161,9 @@ const HomePage = () => {
             <>
               <CollectionsTable
                 collections={collections}
-                onEditRow={handleEditClick}
-                onCreateRecord={handleCreateClick}
+                onEditAction={handleEditClick}
+                onDeployAction={handleDeployClick}
+                onCreateAction={handleCreateClick}
               />
               {isModalVisible && (
                 <ModalLayout
@@ -186,6 +192,43 @@ const HomePage = () => {
                     ) : (
                       <Button onClick={handleCreate} loading={isSaving}>Create</Button>
                     )}
+                  />
+                </ModalLayout>
+              )}
+              {showConfirmationModal && (
+                <ModalLayout
+                  width="small"
+                  onClose={() => setShowConfirmationModal(false)}
+                  labelledBy="confirmation-modal"
+                >
+                  <ModalHeader>
+                    <Typography>Manual Deploy</Typography>
+                  </ModalHeader>
+                  <ModalBody>
+                    <Box>
+                      <Typography>By doing a manual deploy, your index will be updated immediately.<br />Do you want to proceed?</Typography>
+                    </Box>
+                  </ModalBody>
+                  <ModalFooter
+                    startActions={
+                      <Button onClick={() => setShowConfirmationModal(false)} variant="tertiary">
+                        Cancel
+                      </Button>
+                    }
+                    endActions={
+                      <Flex gap={2}>
+                        <LinkButton
+                          href={`https://cloud.orama.com/indexes/view/${currentCollection.indexId}`}
+                          isExternal
+                          endIcon={<ExternalLink width={10} />}
+                          variant="tertiary"
+                          style={{ whiteSpace: 'nowrap', textDecoration: 'none' }}
+                        >
+                          View index
+                        </LinkButton>
+                        <Button onClick={handleDeploy} variant="success">Deploy</Button>
+                      </Flex>
+                    }
                   />
                 </ModalLayout>
               )}
