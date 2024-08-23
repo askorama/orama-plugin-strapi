@@ -46,13 +46,5 @@ module.exports = [
     config: {
       policies: [],
     },
-  },
-  {
-    method: 'GET',
-    path: '/content-type-entries',
-    handler: 'contentTypesController.getContentTypeEntries',
-    config: {
-      policies: [],
-    },
-  },
+  }
 ];

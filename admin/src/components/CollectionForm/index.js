@@ -1,69 +1,6 @@
-import { Box, Divider, Flex, Radio, RadioGroup, SingleSelect, SingleSelectOption, TextInput, Typography } from '@strapi/design-system'
+import { Box, Divider, Flex, Radio, RadioGroup, SingleSelect, SingleSelectOption, Switch, TextInput, Typography } from '@strapi/design-system'
 import React, { memo, useEffect, useState } from 'react'
-
-const cronSettings = [
-    // {
-    //     value: '*/1 * * * *',
-    //     description: 'Every minute (only for testing)',
-    //     label: 'Every minute (only for testing)',
-    //     getNextRun: () => {
-    //         const now = new Date();
-    //         const nextRun = new Date(now.getTime() + 60 * 1000);
-    //         nextRun.setSeconds(0, 0);
-    //         return nextRun;
-    //     },
-    // },
-    {
-        value: '*/30 * * * *',
-        description: 'Every 30 minutes',
-        label: 'Every 30 minutes',
-        getNextRun: () => {
-            const now = new Date();
-            const nextRun = new Date(now.getTime() + (30 - now.getMinutes() % 30) * 60 * 1000);
-            nextRun.setSeconds(0, 0);
-            return nextRun;
-        },
-    },
-    {
-        value: '0 * * * *',
-        description: 'Every hour at minute 0',
-        label: 'Every hour',
-        getNextRun: () => {
-            const now = new Date();
-            const nextRun = new Date(now.getTime() + (60 - now.getMinutes()) * 60 * 1000);
-            nextRun.setMinutes(0, 0, 0);
-            nextRun.setSeconds(0, 0);
-            return nextRun;
-        },
-    },
-    {
-        value: '0 0 * * *',
-        description: 'Every day at 00:00',
-        label: 'Daily',
-        getNextRun: () => {
-            const now = new Date();
-            return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
-        },
-    },
-    {
-        value: '0 0 * * 0',
-        description: 'Every Sunday at 00:00',
-        label: 'Weekly',
-        getNextRun: () => {
-            const now = new Date();
-            return new Date(now.getFullYear(), now.getMonth(), now.getDate() + ((7 - now.getDay()) % 7 || 7), 0, 0, 0);
-        },
-    },
-    {
-        value: '0 0 1 * *',
-        description: 'Every first day of the month at 00:00',
-        label: 'Monthly',
-        getNextRun: () => {
-            const now = new Date();
-            return new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0);
-        },
-    },
-];
+import cronSettings from '../../utils/cronSettings';
 
 const CollectionForm = ({ collection, editMode, contentTypeOptions, onFieldChange }) => {
     const [nextRun, setNextRun] = useState('on content update');
@@ -97,22 +34,36 @@ const CollectionForm = ({ collection, editMode, contentTypeOptions, onFieldChang
                     value={collection?.indexId}
                 />
             </Box>
-            <Box>
-                <SingleSelect
-                    required
-                    onChange={(value) => onFieldChange({ name: 'entity', value })}
-                    label="Content Type"
-                    placeholder="Content Type"
-                    name="entity"
-                    id="entity"
-                    hint="Choose the Content Type you want to map with your index on Orama."
-                    value={collection?.entity}
-                >
-                    {contentTypeOptions?.length > 0 && contentTypeOptions.map((ct, i) =>
-                        <SingleSelectOption key={i} value={ct.value}>{ct.label}</SingleSelectOption>
-                    )}
-                </SingleSelect>
-            </Box>
+            <Flex alignItems="flex-start" gap={4}>
+                <Box width="100%">
+                    <SingleSelect
+                        required
+                        onChange={(value) => onFieldChange({ name: 'entity', value })}
+                        label="Content Type"
+                        placeholder="Content Type"
+                        name="entity"
+                        id="entity"
+                        hint="Choose the Content Type you want to map with your index on Orama."
+                        value={collection?.entity}
+                    >
+                        {contentTypeOptions?.length > 0 && contentTypeOptions.map((ct, i) =>
+                            <SingleSelectOption key={i} value={ct.value}>{ct.label}</SingleSelectOption>
+                        )}
+                    </SingleSelect>
+                </Box>
+                <Box width="100%">
+                    <TextInput
+                        // @ts-ignore
+                        onChange={(e) => onFieldChange({ name: 'includeRelations', value: e.target.value })}
+                        label="Include relations"
+                        placeholder="No relations"
+                        name="includeRelations"
+                        id="includeRelations"
+                        hint="Comma separated list of relations to include. (optional)"
+                        value={collection?.includeRelations}
+                    />
+                </Box>
+            </Flex>
             <Divider />
             <Flex alignItems="flex-start" justifyContent="flex-start">
                 <Box width="100%">

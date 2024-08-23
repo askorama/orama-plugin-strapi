@@ -31,11 +31,16 @@
         "updating",
         "updated"
       ],
-      "default": "outdated"
+      "default": "outdated",
+      "required": true
     },
     "entity": {
       "type": "string",
       "required": true
+    },
+    "includeRelations": {
+      "type": "string",
+      "required": false
     },
     "updateHook": {
       "type": "enumeration",
@@ -43,11 +48,13 @@
         "live",
         "cron"
       ],
-      "default": "live"
+      "default": "live",
+      "required": true
     },
     "updateCron": {
       "type": "string",
-      "default": "0 * * * *"
+      "default": "0 * * * *",
+      "required": true
     },
     "deployedAt": {
       "type": "datetime"

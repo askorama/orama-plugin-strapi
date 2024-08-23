@@ -1,7 +1,8 @@
 import React, { memo } from 'react'
 import { DateTime } from 'luxon';
-import { Button, EmptyStateLayout, Flex, LinkButton, Status, Table, Tbody, Td, Th, Thead, Tr, Typography, VisuallyHidden } from '@strapi/design-system'
+import { Button, EmptyStateLayout, Flex, LinkButton, Status, Table, Tbody, Td, Th, Thead, Tooltip, Tr, Typography, VisuallyHidden } from '@strapi/design-system'
 import { ExternalLink, Plus, Refresh } from '@strapi/icons'
+import cronSettings from '../../utils/cronSettings';
 
 const status = {
   updated: {
@@ -118,11 +119,21 @@ const CollectionsTable = ({ collections, onEditAction, onDeployAction, onCreateA
               </Td>
               {/* Update Hook */}
               <Td>
-                {hook?.[entry.updateHook] ? (
+                {entry.updateHook === 'cron' ? (
+                  <Tooltip
+                    id={`${entry.id}-frequency`}
+                    label={cronSettings.find(c => c.value === entry.updateCron)?.label}
+                    description={null}
+                  >
+                    <Typography textColor="neutral800">
+                      {hook.cron.label}
+                    </Typography>
+                  </Tooltip>
+                ) : <>
                   <Typography textColor="neutral800">
-                    {hook[entry.updateHook].label}
+                    {hook.live.label}
                   </Typography>
-                ) : null}
+                </>}
               </Td>
               {/* Last Updated / Deployed At */}
               <Td>

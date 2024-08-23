@@ -22,8 +22,12 @@ module.exports = ({ strapi }) => {
       }));
     },
 
-    async getEntries(contentType) {
-      return await strapi.query(contentType).findMany();
+    async getEntries(contentType, relations = '') {
+      const entries = await strapi.query(contentType).findMany({
+        populate: relations ? relations.split(',').map(r => `${r}`.trim()) : [],
+      });
+
+      return entries;
     }
   }
 };

@@ -68,6 +68,8 @@ const HomePage = () => {
     setCurrentCollection({
       indexId: undefined,
       entity: undefined,
+      includeRelated: false,
+      includeRelatedEntities: undefined,
       status: 'outdated',
       updateHook: 'live',
       updateCron: '0 * * * *',

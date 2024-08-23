@@ -46,7 +46,7 @@ module.exports = ({ strapi }) => {
       await collectionService.updateWithoutHooks(collection.id, { status: 'updating' });
 
       // getting all the entries and create a new snapshot
-      const entries = await contentTypesService.getEntries(collection.entity);
+      const entries = await contentTypesService.getEntries(collection.entity, collection.includeRelations);
 
       if (entries.length === 0) {
         strapi.log.debug(`SKIP: Collection ${collection.entity} with indexId ${collection.indexId} has no entries`);
@@ -94,7 +94,7 @@ module.exports = ({ strapi }) => {
       await collectionService.updateWithoutHooks(collection.id, { status: 'updating' });
 
       // getting all the entries and create a new snapshot
-      const entries = await contentTypesService.getEntries(collection.entity);
+      const entries = await contentTypesService.getEntries(collection.entity, collection.includeRelations);
 
       if (entries.length === 0) {
         strapi.log.debug(`SKIP: Collection ${collection.entity} with indexId ${collection.indexId} has no entries`);
