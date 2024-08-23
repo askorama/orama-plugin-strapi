@@ -1,5 +1,5 @@
-import { Box, Flex, Radio, RadioGroup, SingleSelect, SingleSelectOption, TextInput, Typography } from '@strapi/design-system'
-import React, { memo, useState } from 'react'
+import { Box, Divider, Flex, Radio, RadioGroup, SingleSelect, SingleSelectOption, TextInput, Typography } from '@strapi/design-system'
+import React, { memo, useEffect, useState } from 'react'
 
 const cronSettings = [
     {
@@ -61,12 +61,15 @@ const cronSettings = [
 ];
 
 const CollectionForm = ({ collection, editMode, contentTypeOptions, onFieldChange }) => {
-    const [nextRun, setNextRun] = useState(cronSettings?.[collection?.updateCron] || '*/30 * * * *');
-
-    const onSelectedCronChange = (value) => {
-        onFieldChange({ name: 'updateCron', value });
-        setNextRun(cronSettings[value]);
-    }
+    const [nextRun, setNextRun] = useState('n/a');
+    useEffect(() => {
+        if (collection?.updateHook === 'cron' && collection?.updateCron) {
+            const cronSetting = cronSettings.find((setting) => setting.value === collection.updateCron);
+            if (cronSetting) {
+                setNextRun(cronSetting.getNextRun().toLocaleString());
+            }
+        }
+    }, [collection]);
 
     return (
         <Flex direction="column" alignItems="stretch" gap={6}>
@@ -99,29 +102,43 @@ const CollectionForm = ({ collection, editMode, contentTypeOptions, onFieldChang
                     )}
                 </SingleSelect>
             </Box>
-            <Box paddingTop={4} paddingBottom={4}>
-                <Box marginBottom={2}>
-                    <Typography variant="pi" fontWeight="bold">
-                        Update Settings
-                    </Typography>
+            <Divider />
+            <Flex alignItems="flex-start" justifyContent="flex-start">
+                <Box width="100%">
+                    <Box marginBottom={2}>
+                        <Typography variant="pi" fontWeight="bold">
+                            Update Settings
+                        </Typography>
+                    </Box>
+                    <RadioGroup
+                        labelledBy="updateHook"
+                        name="updateHook"
+                        id="updateHook"
+                        size="L"
+                        onChange={(e) => onFieldChange({ name: 'updateHook', value: e.target.value })}
+                        value={collection?.updateHook || 'live'}
+                    >
+                        <div style={{ marginBottom: '8px' }}><Radio value="live">Live update</Radio></div>
+                        <div><Radio value="cron">Scheduled job</Radio></div>
+                    </RadioGroup>
                 </Box>
-                <RadioGroup
-                    labelledBy="updateHook"
-                    name="updateHook"
-                    id="updateHook"
-                    size="L"
-                    onChange={(e) => onFieldChange({ name: 'updateHook', value: e.target.value })}
-                    value={collection?.updateHook || 'live'}
-                >
-                    <div style={{ marginBottom: '8px' }}><Radio value="live">Live update</Radio></div>
-                    <div><Radio value="cron">Scheduled job</Radio></div>
-                </RadioGroup>
-
-                {collection?.updateHook === 'cron' &&
-                    <Box paddingTop={4}>
+                <Box width="100%">
+                    <Box>
+                        <Box marginBottom={1}>
+                            <Typography variant="pi" fontWeight="bold">Next run</Typography>
+                        </Box>
+                        {collection?.updateHook === 'cron' ? (
+                            <Typography variant="omega">
+                                {nextRun}
+                            </Typography>
+                        ) : (
+                            <Typography variant="omega">On content update</Typography>
+                        )}
+                    </Box>
+                    <Box paddingTop={4} style={{ opacity: collection?.updateHook === 'live' ? 0 : 1 }}>
                         <SingleSelect
                             required
-                            onChange={onSelectedCronChange}
+                            onChange={(value) => onFieldChange({ name: 'updateCron', value })}
                             label="Deploy Frequency"
                             placeholder="Set deploy frequency"
                             name="updateCron"
@@ -134,13 +151,8 @@ const CollectionForm = ({ collection, editMode, contentTypeOptions, onFieldChang
                             ))}
                         </SingleSelect>
                     </Box>
-                }
-                {collection?.updateHook === 'cron' ? (<Typography variant="pi" fontWeight="bold">
-                    Next run: {nextRun}
-                </Typography>) : (<Typography variant="pi" fontWeight="bold">
-                    Next run: on content update
-                </Typography>)}
-            </Box>
+                </Box>
+            </Flex>
         </Flex>
     )
 }

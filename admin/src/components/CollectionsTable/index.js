@@ -46,32 +46,32 @@ const CollectionsTable = ({ collections, onEditAction, onDeployAction, onCreateA
       <Table colCount={6} footer={null}>
         <Thead>
           <Tr>
-            <Th>
+            <Th action={null}>
               <Typography variant="sigma">
                 CONTENT TYPE
               </Typography>
             </Th>
-            <Th>
+            <Th action={null}>
               <Typography variant="sigma">
                 ORAMA INDEX ID
               </Typography>
             </Th>
-            <Th>
+            <Th action={null}>
               <Typography variant="sigma">
                 STATUS
               </Typography>
             </Th>
-            <Th>
+            <Th action={null}>
               <Typography variant="sigma">
                 UPDATE HOOK
               </Typography>
             </Th>
-            <Th>
+            <Th action={null}>
               <Typography variant="sigma">
                 LAST DEPLOYMENT
               </Typography>
             </Th>
-            <Th>
+            <Th action={null}>
               <Typography variant="sigma">
                 Actions
               </Typography>

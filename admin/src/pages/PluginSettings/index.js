@@ -12,7 +12,8 @@ import {
   ModalLayout,
   Layout,
   ContentLayout,
-  Typography
+  Typography,
+  Status
 } from '@strapi/design-system';
 import { ExternalLink, Plus } from '@strapi/icons';
 import { useFetchClient, useNotification } from '@strapi/helper-plugin';
@@ -29,28 +30,38 @@ const HomePage = () => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [currentCollection, setCurrentCollection] = useState(null);
   const [formEditMode, setFormEditMode] = useState(false);
-  const { get, post, put } = useFetchClient();
+  const { get, post, put, del } = useFetchClient();
   const toggleNotification = useNotification();
 
-  useEffect(() => {
+  const fetchData = () => {
     get(`/${pluginId}/collections`)
       .then(response => setCollections(response.data))
       .then(() => setIsLoading(false))
-      .catch(() => {
+      .catch((err) => {
+        console.error('Failed to load collections.', err);
         toggleNotification({
           type: 'warning',
           message: 'Failed to load collections.',
         });
       });
+
     get(`/${pluginId}/content-types`)
       .then(response => setContentTypes(response.data))
       .then(() => setIsLoading(false))
-      .catch(() => {
+      .catch((err) => {
+        console.error('Failed to load collections.', err);
         toggleNotification({
           type: 'warning',
           message: 'Failed to load content types.',
         });
       });
+  };
+
+  useEffect(() => {
+    fetchData();
+    const intervalId = setInterval(fetchData, 10000);
+
+    return () => clearInterval(intervalId);
   }, [get]);
 
   const handleCreateClick = (collection) => {
@@ -83,7 +94,7 @@ const HomePage = () => {
         message: 'Collection created successfully.',
       });
       setCollections((prevCollections) =>
-        [...prevCollections, newCollection]
+        [...prevCollections, newCollection.data]
       );
       setIsModalVisible(false);
     } catch (err) {
@@ -100,14 +111,14 @@ const HomePage = () => {
   const handleUpdate = async () => {
     setIsSaving(true);
     try {
-      await put(`/${pluginId}/collections/${currentCollection.id}`, currentCollection);
+      const collection = await put(`/${pluginId}/collections/${currentCollection.id}`, currentCollection);
       toggleNotification({
         type: 'success',
         message: 'Collection updated successfully.',
       });
       setCollections((prevCollections) =>
         prevCollections.map((col) =>
-          col.id === currentCollection.id ? currentCollection : col
+          col.id === collection.data?.id ? collection.data : col
         )
       );
       setIsModalVisible(false);
@@ -119,6 +130,28 @@ const HomePage = () => {
       });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setIsModalVisible(false);
+    try {
+      await del(`/${pluginId}/collections/${currentCollection.id}`);
+      toggleNotification({
+        type: 'success',
+        message: 'Collection deleted successfully.',
+      });
+      setCollections((prevCollections) =>
+        prevCollections.filter((col) =>
+          col.id !== currentCollection.id
+        )
+      );
+    } catch (err) {
+      console.error(err);
+      toggleNotification({
+        type: 'warning',
+        message: 'Failed to delete collection.',
+      });
     }
   };
 
@@ -182,13 +215,23 @@ const HomePage = () => {
                     />
                   </ModalBody>
                   <ModalFooter
-                    startActions={
-                      <Button onClick={() => setIsModalVisible(false)} variant="tertiary">
-                        Cancel
+                    startActions={formEditMode ? (
+                      <Button onClick={handleDelete} variant="danger-light">
+                        Delete collection
                       </Button>
-                    }
+                    ) : (<Button onClick={() => setIsModalVisible(false)} variant="tertiary">
+                      Cancel
+                    </Button>)}
                     endActions={formEditMode ? (
-                      <Button onClick={handleUpdate} loading={isSaving}>Update</Button>
+                      <>
+                        <LinkButton
+                          href={`https://cloud.orama.com/indexes/view/${currentCollection.indexId}`}
+                          isExternal
+                          endIcon={<ExternalLink width={10} />}
+                          variant="tertiary" style={{ whiteSpace: 'nowrap', textDecoration: 'none' }}
+                        >View index</LinkButton>
+                        <Button onClick={handleUpdate} loading={isSaving}>Update</Button>
+                      </>
                     ) : (
                       <Button onClick={handleCreate} loading={isSaving}>Create</Button>
                     )}
@@ -206,7 +249,13 @@ const HomePage = () => {
                   </ModalHeader>
                   <ModalBody>
                     <Box>
-                      <Typography>By doing a manual deploy, your index will be updated immediately.<br />Do you want to proceed?</Typography>
+                      <Typography>
+                        By doing a manual deploy, your index will be updated immediately<br />
+                        with the most recent data from your Content-Type <Flex inline><Status variant="secondary" size="S" showBullet={false}>
+                          <Typography>{currentCollection.entity}</Typography>
+                        </Status></Flex><br />
+                        Do you want to proceed?
+                      </Typography>
                     </Box>
                   </ModalBody>
                   <ModalFooter
@@ -226,7 +275,7 @@ const HomePage = () => {
                         >
                           View index
                         </LinkButton>
-                        <Button onClick={handleDeploy} variant="success">Deploy</Button>
+                        <Button onClick={handleDeploy} variant="success">Deploy now</Button>
                       </Flex>
                     }
                   />
