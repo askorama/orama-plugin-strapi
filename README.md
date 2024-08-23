@@ -2,11 +2,10 @@
 
 ## Installation
 
-- Create a new Strapi project with `yarn create strapi-app my-strapi-project --quickstart`, or go to your existing project.
-- Create a folder `src/plugins` if doesn't already exist.
+- Go to your existing project or create a new Strapi project with `yarn create strapi-app my-strapi-project --quickstart`.
+- Create a folder `src/plugins` if it doesn't already exist.
 - Install Orama Strapi plugin by downloading or cloning this repo into `src/plugins`.
 - Configure the plugin in the `config/plugins.js` file.
-
 
 ```js
 // config/plugins.js
@@ -26,7 +25,7 @@ You can configure your `ORAMA_PRIVATE_API_KEY` in [Developer tools](https://clou
 
 ## Usage
 
-Configure and manage `Collections` that map your Strapi app Content-Type with an Index on [Orama Cloud](https://cloud.orama.com/indexes).
+Configure and manage `Collections` that map your Strapi app Content-Types with an Index on [Orama Cloud](https://cloud.orama.com/indexes).
 
 ### Creating an index
 
@@ -47,4 +46,5 @@ Collections map your Content-Types on Strapi with an index on Orama Cloud. To ke
   - **Scheduled job** will automatically update your index at a defined frequency: every 30 minutes, hourly, daily, weekly or monthly.
 
 
-When an index is not in sync with the latest changes in Strapi, the collection status is set to `outdated`. When the **Scheduled job** is executed, it checks the collection status, to avoid triggering an update if the data is already in sync. You can always trigger a new deployment manually.
+When an index is not in sync with the latest changes in Strapi, the collection status is set to `outdated`. 
+When the **Scheduled job** is executed, it checks the collection status, to avoid triggering an update if the data is already in sync. You can always trigger a new deployment manually.
