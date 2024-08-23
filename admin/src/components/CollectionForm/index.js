@@ -2,22 +2,24 @@ import { Box, Divider, Flex, Radio, RadioGroup, SingleSelect, SingleSelectOption
 import React, { memo, useEffect, useState } from 'react'
 
 const cronSettings = [
-    {
-        value: '*/1 * * * *',
-        description: 'Every minute (only for testing)',
-        label: 'Every minute',
-        getNextRun: () => {
-            const now = new Date();
-            return new Date(now.getTime() + 60 * 1000);
-        },
-    },
+    // {
+    //     value: '*/1 * * * *',
+    //     description: 'Every minute (only for testing)',
+    //     label: 'Every minute',
+    //     getNextRun: () => {
+    //         const now = new Date();
+    //         return new Date(now.getTime() + 60 * 1000);
+    //     },
+    // },
     {
         value: '*/30 * * * *',
         description: 'Every 30 minutes',
         label: 'Every 30 minutes',
         getNextRun: () => {
             const now = new Date();
-            return new Date(now.getTime() + (30 - now.getMinutes() % 30) * 60 * 1000);
+            const nextRun = new Date(now.getTime() + (30 - now.getMinutes() % 30) * 60 * 1000);
+            nextRun.setSeconds(0, 0);
+            return nextRun;
         },
     },
     {
@@ -28,6 +30,7 @@ const cronSettings = [
             const now = new Date();
             const nextRun = new Date(now.getTime() + (60 - now.getMinutes()) * 60 * 1000);
             nextRun.setMinutes(0, 0, 0);
+            nextRun.setSeconds(0, 0);
             return nextRun;
         },
     },
