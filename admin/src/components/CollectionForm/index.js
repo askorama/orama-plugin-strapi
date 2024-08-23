@@ -5,10 +5,12 @@ const cronSettings = [
     // {
     //     value: '*/1 * * * *',
     //     description: 'Every minute (only for testing)',
-    //     label: 'Every minute',
+    //     label: 'Every minute (only for testing)',
     //     getNextRun: () => {
     //         const now = new Date();
-    //         return new Date(now.getTime() + 60 * 1000);
+    //         const nextRun = new Date(now.getTime() + 60 * 1000);
+    //         nextRun.setSeconds(0, 0);
+    //         return nextRun;
     //     },
     // },
     {
@@ -64,15 +66,21 @@ const cronSettings = [
 ];
 
 const CollectionForm = ({ collection, editMode, contentTypeOptions, onFieldChange }) => {
-    const [nextRun, setNextRun] = useState('n/a');
+    const [nextRun, setNextRun] = useState('on content update');
+    const [cronUpdates, setCronUpdates] = useState(collection?.updateHook === 'cron');
+
     useEffect(() => {
         if (collection?.updateHook === 'cron' && collection?.updateCron) {
             const cronSetting = cronSettings.find((setting) => setting.value === collection.updateCron);
             if (cronSetting) {
+                setCronUpdates(true);
                 setNextRun(cronSetting.getNextRun().toLocaleString());
             }
+        } else {
+            setCronUpdates(false);
+            setNextRun('on content update');
         }
-    }, [collection]);
+    }, [collection?.updateHook, collection?.updateCron]);
 
     return (
         <Flex direction="column" alignItems="stretch" gap={6}>
@@ -130,15 +138,11 @@ const CollectionForm = ({ collection, editMode, contentTypeOptions, onFieldChang
                         <Box marginBottom={1}>
                             <Typography variant="pi" fontWeight="bold">Next run</Typography>
                         </Box>
-                        {collection?.updateHook === 'cron' ? (
-                            <Typography variant="omega">
-                                {nextRun}
-                            </Typography>
-                        ) : (
-                            <Typography variant="omega">On content update</Typography>
-                        )}
+                        <Typography variant="omega">
+                            {nextRun}
+                        </Typography>
                     </Box>
-                    <Box paddingTop={4} style={{ opacity: collection?.updateHook === 'live' ? 0 : 1 }}>
+                    <Box paddingTop={4} style={{ opacity: cronUpdates ? 1 : 0 }}>
                         <SingleSelect
                             required
                             onChange={(value) => onFieldChange({ name: 'updateCron', value })}
