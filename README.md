@@ -1,17 +1,16 @@
-# Strapi plugin orama-plugin-strapi
+# Orama - Strapi plugin
 
-## Developing
+## Installation
 
-In order to start working with in this repo you should follow the following steps:
+- Create a new Strapi project with `yarn create strapi-app my-strapi-project --quickstart`, or go to your existing project.
+- Create a folder `src/plugins` if doesn't already exist.
+- Install Orama Strapi plugin by downloading or cloning this repo into `src/plugins`.
+- Configure the plugin in the `config/plugins.js` file.
 
-- Create new Strapi project with `yarn create strapi-app my-strapi-project --quickstart`
-- Create a folder under `src` named `plugins`
-- Clone the repo inside the `plugins` folder
-- Add the plugin to the `config/plugins.js` file (look at the example)
-- Start the project at the root with `yarn develop --watch-admin`
 
 ```js
-// plugins.js
+// config/plugins.js
+
 module.exports = ({ env }) => ({
   orama: {
     enabled: true,
@@ -23,8 +22,27 @@ module.exports = ({ env }) => ({
 });
 ```
 
-### Server `[server dir]`
+You can configure your `ORAMA_PRIVATE_API_KEY` in [Developer tools](https://cloud.orama.com/developer-tools) page on Orama Cloud.
 
-All the endpoints declared inside the `routes/index.js` file will be available under `<BASE_URL>/orama/<route_path>`
+## Usage
 
-### Client `[admin dir]`
+Configure and manage `Collections` that map your Strapi app Content-Type with an Index on [Orama Cloud](https://cloud.orama.com/indexes).
+
+- Visit Orama Cloud and [Create](https://cloud.orama.com/indexes/create/from-integrations) a new "REST API" index.
+- Define the searchable properties in the schema. This schema reflects your Strapi's model fields that should be searchable.
+- Once your index is ready, visit your Strapi administration dashboard.
+- Select `Orama` from the menu to manage your collections.
+
+### Create or update a collection
+
+Collections map your Content-Types on Strapi with an index on Orama Cloud. To keep your index in sync with the data, you can configure the update settings for each collection.
+
+- add a new collection
+- insert your newly created `indexId`
+- select a Content Type
+- select the Update Settings
+  - **Live updates** will update your index as soon as any content is created, updated or deleted.
+  - **Scheduled job** will automatically update your index at a defined frequency: every 30 minutes, hourly, daily, weekly or monthly.
+
+When an index is not in sync with the latest changes in Strapi, the collection status is set to `outdated`. 
+When the **Scheduled job** is executed, it checks the collection status, to avoid triggering an update if the data is already in sync.You can always trigger a new deployment manually.
