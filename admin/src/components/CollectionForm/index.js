@@ -123,34 +123,36 @@ const CollectionForm = ({ collection, editMode, contentTypeOptions, onFieldChang
                     </RadioGroup>
                 </Box>
                 <Box width="100%">
-                    <Box>
-                        <Box marginBottom={1}>
-                            <Typography variant="pi" fontWeight="bold">Next run</Typography>
+                    {editMode && (<>
+                        <Box>
+                            <Box marginBottom={1}>
+                                <Typography variant="pi" fontWeight="bold">Next run</Typography>
+                            </Box>
+                            {collection?.updateHook === 'cron' ? (
+                                <Typography variant="omega">
+                                    {nextRun}
+                                </Typography>
+                            ) : (
+                                <Typography variant="omega">On content update</Typography>
+                            )}
                         </Box>
-                        {collection?.updateHook === 'cron' ? (
-                            <Typography variant="omega">
-                                {nextRun}
-                            </Typography>
-                        ) : (
-                            <Typography variant="omega">On content update</Typography>
-                        )}
-                    </Box>
-                    <Box paddingTop={4} style={{ opacity: collection?.updateHook === 'live' ? 0 : 1 }}>
-                        <SingleSelect
-                            required
-                            onChange={(value) => onFieldChange({ name: 'updateCron', value })}
-                            label="Deploy Frequency"
-                            placeholder="Set deploy frequency"
-                            name="updateCron"
-                            id="updateCron"
-                            hint="Set the frequency to update your index."
-                            value={collection?.updateCron || '*/30 * * * *'}
-                        >
-                            {cronSettings.map((option, i) => (
-                                <SingleSelectOption key={i} value={option.value}>{option.label}</SingleSelectOption>
-                            ))}
-                        </SingleSelect>
-                    </Box>
+                        <Box paddingTop={4} style={{ opacity: collection?.updateHook === 'live' ? 0 : 1 }}>
+                            <SingleSelect
+                                required
+                                onChange={(value) => onFieldChange({ name: 'updateCron', value })}
+                                label="Deploy Frequency"
+                                placeholder="Set deploy frequency"
+                                name="updateCron"
+                                id="updateCron"
+                                hint="Set the frequency to update your index."
+                                value={collection?.updateCron || '0 * * * *'}
+                            >
+                                {cronSettings.map((option, i) => (
+                                    <SingleSelectOption key={i} value={option.value}>{option.label}</SingleSelectOption>
+                                ))}
+                            </SingleSelect>
+                        </Box>
+                    </>)}
                 </Box>
             </Flex>
         </Flex>

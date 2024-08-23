@@ -19,7 +19,7 @@ module.exports = ({ strapi }) => {
       const entries = await strapi
         .plugin('orama')
         .service('contentTypesService')
-        .getEntries({ contentType });
+        .getEntries(contentType);
 
       return entries
     }

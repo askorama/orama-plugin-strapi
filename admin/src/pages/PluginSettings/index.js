@@ -157,7 +157,19 @@ const HomePage = () => {
 
   const handleDeploy = async () => {
     setShowConfirmationModal(false);
-    console.log('Deploying collection:', currentCollection);
+    try {
+      await post(`/${pluginId}/collections/${currentCollection.id}/deploy`);
+      toggleNotification({
+        type: 'success',
+        message: 'Collection deployment started.',
+      });
+    } catch (err) {
+      console.error(err);
+      toggleNotification({
+        type: 'warning',
+        message: 'Failed to deploy collection.',
+      });
+    }
   };
 
   return (

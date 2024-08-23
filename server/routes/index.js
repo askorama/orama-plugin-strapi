@@ -24,6 +24,22 @@ module.exports = [
     },
   },
   {
+    method: 'DELETE',
+    path: '/collections/:id',
+    handler: 'collectionsController.delete',
+    config: {
+      policies: [],
+    },
+  },
+  {
+    method: 'POST',
+    path: '/collections/:id/deploy',
+    handler: 'collectionsController.deploy',
+    config: {
+      policies: [],
+    },
+  },
+  {
     method: 'GET',
     path: '/content-types',
     handler: 'contentTypesController.getContentTypes',
@@ -33,11 +49,10 @@ module.exports = [
   },
   {
     method: 'GET',
-    path: '/get-content-type-entries',
+    path: '/content-type-entries',
     handler: 'contentTypesController.getContentTypeEntries',
     config: {
       policies: [],
-      auth: false
     },
   },
 ];

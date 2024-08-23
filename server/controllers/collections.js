@@ -42,5 +42,13 @@ module.exports = ({ strapi }) => {
         .delete(id);
       ctx.send(deletedCollection);
     },
+
+    async deploy(ctx) {
+      const { id } = ctx.params;
+      const collection = await strapi.plugin('orama')
+        .service('collectionsService')
+        .deploy(id);
+      ctx.send(collection);
+    },
   }
 };

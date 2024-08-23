@@ -1,19 +1,33 @@
 'use strict';
 
+const { CloudManager } = require('@oramacloud/client');
+
 module.exports = ({ strapi }) => {
+  const contentTypesService = strapi.plugin('orama').service('contentTypesService');
   const collectionService = strapi.plugin('orama').service('collectionsService');
+  const privateApiKey = strapi.config.get('plugin.orama.privateApiKey');
+  const oramaCloudManager = new CloudManager({
+    api_key: privateApiKey,
+  })
 
   return {
-    async updateIndex({ indexId, documents }) {
-      // Update index
+    async snapshotIndex({ indexId, documents }) {
+      const index = oramaCloudManager.index(indexId)
+      await index.snapshot([]);
+      await index.snapshot(documents);
+      await index.deploy();
+
+      strapi.log.info(`Index ${indexId} snapshot created and deployed`);
     },
 
-    async deployIndex({ indexId }) {
-      // Deploy index
-    },
+    async processLiveUpdate({ id }, record, action) {
+      const collection = await collectionService.findOne(id);
 
-    async processLiveUpdate(collection, entity, action) {
-      const privateApiKey = strapi.config.get('plugin.orama.privateApiKey');
+      if (!collection) {
+        strapi.log.error(`Collection with id ${id} not found`);
+        return;
+      }
+
       if (!privateApiKey) {
         strapi.log.error('Private API key is required to process index updates');
         return;
@@ -31,27 +45,40 @@ module.exports = ({ strapi }) => {
 
       strapi.log.debug(`Processing live update for ${collection.entity} with indexId ${collection.indexId}`);
 
-      strapi.log.debug(`Action: ${action}`);
-      strapi.log.debug(`Entity: ${JSON.stringify(entity)}`);
+      await collectionService.updateWithoutHooks(collection.id, { status: 'updating' });
 
-      await collectionService.update(collection.id, {
-        status: 'updating'
+      // getting all the entries and create a new snapshot
+      const entries = await contentTypesService.getEntries(collection.entity);
+
+      if (entries.length === 0) {
+        strapi.log.debug(`SKIP: Collection ${collection.entity} with indexId ${collection.indexId} has no entries`);
+        return;
+      }
+
+      await this.snapshotIndex({
+        indexId: collection.indexId,
+        documents: entries.map(record => ({
+          objectID: record.id,
+          ...record
+        }))
       });
 
-      // TODO: 
-      // Update the index
-      // Deploy the index
-      await new Promise(resolve => setTimeout(resolve, 15000));
       strapi.log.debug(`Live update for ${collection.entity} with indexId ${collection.indexId} completed`);
 
-      await collectionService.update(collection.id, {
+      await collectionService.updateWithoutHooks(collection.id, {
         status: 'updated',
-        deployedAt: new Date()
+        deployed_at: new Date().getTime()
       });
     },
 
-    async processScheduledUpdate(collection) {
-      const privateApiKey = strapi.config.get('plugin.orama.privateApiKey');
+    async processScheduledUpdate({ id }) {
+      const collection = await collectionService.findOne(id);
+
+      if (!collection) {
+        strapi.log.error(`Collection with id ${id} not found`);
+        return;
+      }
+
       if (!privateApiKey) {
         strapi.log.error('Private API key is required to process index updates');
         return;
@@ -67,22 +94,31 @@ module.exports = ({ strapi }) => {
         return;
       }
 
-      strapi.log.debug(`Processing scheduled update for ${collection.entity} with indexId ${collection.indexId}`);
+      strapi.log.debug(`Processing scheduled index update for ${collection.entity} with indexId ${collection.indexId}`);
 
-      await collectionService.update(collection.id, {
-        status: 'updating'
+      await collectionService.updateWithoutHooks(collection.id, { status: 'updating' });
+
+      // getting all the entries and create a new snapshot
+      const entries = await contentTypesService.getEntries(collection.entity);
+
+      if (entries.length === 0) {
+        strapi.log.debug(`SKIP: Collection ${collection.entity} with indexId ${collection.indexId} has no entries`);
+        return;
+      }
+
+      await this.snapshotIndex({
+        indexId: collection.indexId,
+        documents: entries.map(record => ({
+          objectID: record.id,
+          ...record
+        }))
       });
 
-      // TODO: 
-      // Fetch data from the database
-      // Update the index
-      // Deploy the index
-      await new Promise(resolve => setTimeout(resolve, 15000));
-      strapi.log.debug(`Live update for ${collection.entity} with indexId ${collection.indexId} completed`);
+      strapi.log.debug(`Scheduled update for ${collection.entity} with indexId ${collection.indexId} completed`);
 
-      await collectionService.update(collection.id, {
+      await collectionService.updateWithoutHooks(collection.id, {
         status: 'updated',
-        deployedAt: new Date()
+        deployed_at: new Date().getTime()
       });
     }
   }

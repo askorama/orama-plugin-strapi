@@ -22,7 +22,7 @@ module.exports = ({ strapi }) => {
       }));
     },
 
-    async getEntries({ contentType }) {
+    async getEntries(contentType) {
       return await strapi.query(contentType).findMany();
     }
   }

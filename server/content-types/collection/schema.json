@@ -1,6 +1,6 @@
 {
   "kind": "collectionType",
-  "collectionName": "collections",
+  "collectionName": "orama_collections",
   "info": {
     "singularName": "collection",
     "pluralName": "collections",
@@ -47,7 +47,7 @@
     },
     "updateCron": {
       "type": "string",
-      "default": "*/30 * * * *"
+      "default": "0 * * * *"
     },
     "deployedAt": {
       "type": "datetime"
