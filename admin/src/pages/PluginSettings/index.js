@@ -59,13 +59,20 @@ const HomePage = () => {
 
   useEffect(() => {
     fetchData();
-    const intervalId = setInterval(fetchData, 10000);
+    const intervalId = setInterval(fetchData, 5000);
 
     return () => clearInterval(intervalId);
   }, [get]);
 
   const handleCreateClick = (collection) => {
-    setCurrentCollection({});
+    setCurrentCollection({
+      indexId: undefined,
+      entity: undefined,
+      status: 'outdated',
+      updateHook: 'live',
+      updateCron: '0 * * * *',
+      deployedAt: undefined,
+    });
     setFormEditMode(false);
     setIsModalVisible(true);
   };
@@ -257,7 +264,7 @@ const HomePage = () => {
                   labelledBy="confirmation-modal"
                 >
                   <ModalHeader>
-                    <Typography>Manual Deploy</Typography>
+                    <Typography>Deploy</Typography>
                   </ModalHeader>
                   <ModalBody>
                     <Box>
@@ -287,7 +294,7 @@ const HomePage = () => {
                         >
                           View index
                         </LinkButton>
-                        <Button onClick={handleDeploy} variant="success">Deploy now</Button>
+                        <Button onClick={handleDeploy} variant="primary">Deploy now</Button>
                       </Flex>
                     }
                   />

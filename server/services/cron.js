@@ -5,6 +5,7 @@ const registeredCronJobs = new Map();
 module.exports = ({ strapi }) => {
     const oramaService = strapi.plugin('orama').service('oramaManagerService');
     const collectionService = strapi.plugin('orama').service('collectionsService');
+    const hookManagerService = strapi.plugin('orama').service('hookManagerService');
 
     return {
         registerCronJob(collection) {
@@ -54,18 +55,16 @@ module.exports = ({ strapi }) => {
         },
 
         registerLifecycleHooks(collection) {
-            const { entity } = collection;
-
-            strapi.db.lifecycles.subscribe({
-                models: [entity],
-                async afterCreate() {
-                    await handleUpdateStatus(collection);
+            hookManagerService.unregisterHooks(collection);
+            hookManagerService.registerHooks(collection, {
+                afterCreate() {
+                    handleUpdateStatus(collection);
                 },
-                async afterUpdate() {
-                    await handleUpdateStatus(collection);
+                afterUpdate() {
+                    handleUpdateStatus(collection);
                 },
-                async afterDelete() {
-                    await handleUpdateStatus(collection);
+                afterDelete() {
+                    handleUpdateStatus(collection);
                 },
             });
 

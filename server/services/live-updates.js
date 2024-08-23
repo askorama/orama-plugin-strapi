@@ -6,6 +6,7 @@ module.exports = ({ strapi }) => {
     const oramaService = strapi.plugin('orama').service('oramaManagerService');
     const collectionService = strapi.plugin('orama').service('collectionsService');
     const cronService = strapi.plugin('orama').service('cronService');
+    const hookManagerService = strapi.plugin('orama').service('hookManagerService');
 
     return {
         registerLifecycleHooks(collection) {
@@ -15,8 +16,8 @@ module.exports = ({ strapi }) => {
             cronService.removeCronJob(id);
 
             // Register lifecycle hooks to trigger updates when an entity is created, updated or deleted
-            strapi.db.lifecycles.subscribe({
-                models: [entity],
+            hookManagerService.unregisterHooks(collection);
+            hookManagerService.registerHooks(collection, {
                 async afterCreate(event) {
                     await handleLiveUpdates(event, 'create');
                 },
@@ -27,11 +28,10 @@ module.exports = ({ strapi }) => {
                     await handleLiveUpdates(event, 'delete');
                 },
             });
+
             async function handleLiveUpdates(event, action) {
                 const { model, result } = event;
-
                 await collectionService.updateWithoutHooks(collection.id, { status: 'outdated' });
-
                 oramaService.processLiveUpdate(collection, result, action);
             }
         },
