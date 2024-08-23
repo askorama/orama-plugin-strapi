@@ -15,40 +15,44 @@ module.exports = async ({ strapi }) => {
   });
 
   if (liveUpdates.length > 0) {
-    async function handleEvent(event) {
-      const { model, result } = event;
-
-      const collection = await strapi.query('plugin::orama.collection').findOne({
-        where: { entity: model.uid },
-      });
-
-      if (collection) {
-        await collectionService.update(collection.id, {
-          ...collection,
-          status: 'updating'
-        });
-
-        await oramaService.processLiveUpdate(collection, result);
-
-        await collectionService.update(collection.id, {
-          ...collection,
-          status: 'updated',
-          deployedAt: new Date()
-        });
-      }
-    }
     strapi.db.lifecycles.subscribe({
       models: [...new Set(liveUpdates.map(c => c.entity))],
       async afterCreate(event) {
-        await handleEvent(event);
+        await handleLiveUpdates(event);
       },
       async afterUpdate(event) {
-        await handleEvent(event);
+        await handleLiveUpdates(event);
       },
       async afterDelete(event) {
-        await handleEvent(event);
+        await handleLiveUpdates(event);
       },
     });
+    async function handleLiveUpdates(event) {
+      const { model, result } = event;
+
+      const collection = await strapi.query('plugin::orama.collection').findOne({
+        where: {
+          entity: model.uid,
+          updateHook: 'live'
+        },
+      });
+
+      if (!collection) {
+        strapi.log.warn('Collection not found - entity: ', model.uid);
+        return;
+      }
+
+      if (collection?.status === 'updating') {
+        strapi.log.warn('Collection is already updating - indexId: ', collection?.indexId);
+        return;
+      }
+
+      if (collection.status === 'outdated') {
+        oramaService.processLiveUpdate(collection, result);
+      } else {
+        oramaService.processLiveUpdate(await collectionService.update(collection.id, { status: 'outdated' }), result);
+      }
+    }
   }
 
   /**
@@ -67,19 +71,7 @@ module.exports = async ({ strapi }) => {
         task: async () => {
           try {
             console.log('Updating collection:', collection);
-
-            await collectionService.update(collection.id, {
-              ...collection,
-              status: 'updating'
-            });
-
-            await oramaService.processScheduledUpdate(collection);
-
-            await collectionService.update(collection.id, {
-              ...collection,
-              status: 'updated',
-              deployedAt: new Date()
-            });
+            oramaService.processScheduledUpdate(collection);
           } catch (error) {
             console.error(error);
           }
@@ -90,4 +82,30 @@ module.exports = async ({ strapi }) => {
       }
     })
   });
+
+  if (scheduledUpdates.length > 0) {
+    strapi.db.lifecycles.subscribe({
+      models: [...new Set(scheduledUpdates.map(c => c.entity))],
+      async afterCreate(event) {
+        await handleUpdateStatus(event);
+      },
+      async afterUpdate(event) {
+        await handleUpdateStatus(event);
+      },
+      async afterDelete(event) {
+        await handleUpdateStatus(event);
+      },
+    });
+    async function handleUpdateStatus({ model }) {
+      const collection = await strapi.query('plugin::orama.collection').findOne({
+        where: { entity: model.uid },
+      });
+
+      if (collection) {
+        await collectionService.update(collection.id, {
+          status: 'outdated'
+        });
+      }
+    }
+  }
 };

@@ -139,6 +139,7 @@ const HomePage = () => {
                   endIcon={<ExternalLink />}
                   size="L"
                   variant="secondary"
+                  style={{ whiteSpace: 'nowrap', textDecoration: 'none' }}
                 >View indexes</LinkButton>
               </>
             )

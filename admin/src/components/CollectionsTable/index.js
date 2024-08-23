@@ -1,10 +1,7 @@
-// @ts-nocheck
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo } from 'react'
 import { DateTime } from 'luxon';
-import { BaseCheckbox, Box, Button, EmptyStateLayout, FieldLabel, Flex, Icon, LinkButton, ModalBody, ModalFooter, ModalHeader, ModalLayout, SingleSelect, SingleSelectOption, Status, Table, Tbody, Td, TextInput, Th, Thead, Tr, Typography, VisuallyHidden } from '@strapi/design-system'
-import { useFetchClient, useNotification } from '@strapi/helper-plugin'
-import pluginId from '../../pluginId'
-import { CollectionType, Cross, Database, EmptyDocuments, ExternalLink, Plus } from '@strapi/icons'
+import { Box, Button, EmptyStateLayout, Flex, LinkButton, Status, Table, Tbody, Td, Th, Thead, Tr, Typography, VisuallyHidden } from '@strapi/design-system'
+import { ExternalLink, Plus } from '@strapi/icons'
 
 const status = {
   updated: {
@@ -31,13 +28,6 @@ const hook = {
 }
 
 const CollectionsTable = ({ collections, onEditRow, onCreateRecord }) => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [currentCollection, setCurrentCollection] = useState(null);
-  const [formEditMode, setFormEditMode] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const { get, post, put } = useFetchClient();
-  const toggleNotification = useNotification();
-
 
   const formatLastDeployedAt = (date) => {
     if (!date)
@@ -53,7 +43,7 @@ const CollectionsTable = ({ collections, onEditRow, onCreateRecord }) => {
 
   return (
     <>
-      <Table colCount={10} rowCount={6}>
+      <Table colCount={6} footer={null}>
         <Thead>
           <Tr>
             <Th>
@@ -105,6 +95,7 @@ const CollectionsTable = ({ collections, onEditRow, onCreateRecord }) => {
                     isExternal
                     size="S"
                     variant="secondary"
+                    style={{ whiteSpace: 'nowrap', textDecoration: 'none' }}
                     endIcon={<ExternalLink />}
                   >
                     {entry.indexId}
@@ -152,6 +143,7 @@ const CollectionsTable = ({ collections, onEditRow, onCreateRecord }) => {
       </Table>
       {collections.length === 0 && (
         <EmptyStateLayout
+          icon={null}
           content="You don't have any collection yet."
           action={<Button
             variant="secondary"
