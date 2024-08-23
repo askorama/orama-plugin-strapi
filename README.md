@@ -12,12 +12,15 @@ In order to start working with in this repo you should follow the following step
 
 ```js
 // plugins.js
-module.exports = {
+module.exports = ({ env }) => ({
   orama: {
     enabled: true,
     resolve: "./src/plugins/orama-plugin-strapi",
+    config: {
+      privateApiKey: env('ORAMA_PRIVATE_API_KEY'),
+    },
   },
-};
+});
 ```
 
 ### Server `[server dir]`
