@@ -27,6 +27,11 @@ module.exports = ({ strapi }) => {
         populate: relations ? relations.split(',').map(r => `${r}`.trim()) : [],
       });
 
+      strapi.log.debug(`Found ${entries.length} entries for content type ${contentType}`);
+
+      // TODO: remove this log
+      console.log('Documents:', entries);
+
       return entries;
     }
   }

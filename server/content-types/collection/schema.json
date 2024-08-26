@@ -42,6 +42,10 @@
       "type": "string",
       "required": false
     },
+    "documentsCount": {
+      "type": "integer",
+      "default": 0
+    },
     "updateHook": {
       "type": "enumeration",
       "enum": [

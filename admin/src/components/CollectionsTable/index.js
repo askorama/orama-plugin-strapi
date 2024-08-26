@@ -44,7 +44,7 @@ const CollectionsTable = ({ collections, onEditAction, onDeployAction, onCreateA
 
   return (
     <>
-      <Table colCount={6} footer={null}>
+      <Table colCount={7} footer={null}>
         <Thead>
           <Tr>
             <Th action={null}>
@@ -64,12 +64,17 @@ const CollectionsTable = ({ collections, onEditAction, onDeployAction, onCreateA
             </Th>
             <Th action={null}>
               <Typography variant="sigma">
+                DOCUMENTS
+              </Typography>
+            </Th>
+            <Th action={null}>
+              <Typography variant="sigma">
                 UPDATE HOOK
               </Typography>
             </Th>
             <Th action={null}>
               <Typography variant="sigma">
-                LAST DEPLOYMENT
+                LAST RUN
               </Typography>
             </Th>
             <Th action={null}>
@@ -117,18 +122,20 @@ const CollectionsTable = ({ collections, onEditAction, onDeployAction, onCreateA
                   </Flex>
                 ) : null}
               </Td>
+              {/* Documents */}
+              <Td>
+                {entry.documentsCount && (
+                  <Typography>
+                    {entry.documentsCount}
+                  </Typography>
+                )}
+              </Td>
               {/* Update Hook */}
               <Td>
                 {entry.updateHook === 'cron' ? (
-                  <Tooltip
-                    id={`${entry.id}-frequency`}
-                    label={cronSettings.find(c => c.value === entry.updateCron)?.label}
-                    description={null}
-                  >
-                    <Typography textColor="neutral800">
-                      {hook.cron.label}
-                    </Typography>
-                  </Tooltip>
+                  <Typography textColor="neutral800">
+                    {hook.cron.label}
+                  </Typography>
                 ) : <>
                   <Typography textColor="neutral800">
                     {hook.live.label}

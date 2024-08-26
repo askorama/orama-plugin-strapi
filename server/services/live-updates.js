@@ -15,6 +15,8 @@ module.exports = ({ strapi }) => {
             // Remove any existing cron job for the collection
             cronService.removeCronJob(id);
 
+            strapi.log.info(`registering life-cycle hooks for ${collection.entity}`);
+
             // Register lifecycle hooks to trigger updates when an entity is created, updated or deleted
             hookManagerService.unregisterHooks(collection);
             hookManagerService.registerHooks(collection, {
