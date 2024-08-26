@@ -39,12 +39,17 @@ Collections map your Content-Types on Strapi with an index on Orama Cloud. To ke
 
 - Select `Orama` from the menu to manage your collections.
 - Add a new collection.
-- Paste your newly created `indexId`
-- Select a Content Type
-- Select the Update Settings option
+
+<img src="./misc/assets/collection.png" alt="Collection form" width="600" />
+
+- Paste your newly created `indexId`.
+- Select a Content Type.
+- (Optional) Specify the related records to include.
+- Select the Update Settings option:
   - **Live updates** will update your index as soon as any content is created, updated or deleted.
   - **Scheduled job** will automatically update your index at a defined frequency: every 30 minutes, hourly, daily, weekly or monthly.
 
-
 When an index is not in sync with the latest changes in Strapi, the collection status is set to `outdated`. 
 When the **Scheduled job** is executed, it checks the collection status, to avoid triggering an update if the data is already in sync. You can always trigger a new deployment manually.
+
+<img src="./misc/assets/deploy.gif" alt="Manual deploy" width="600" />
