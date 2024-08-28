@@ -1,6 +1,6 @@
 'use strict';
 
-const ENTITY_NAME = 'plugin::orama.collection';
+const ENTITY_NAME = 'plugin::orama-cloud.collection';
 
 module.exports = ({ strapi }) => {
   return {
@@ -31,7 +31,7 @@ module.exports = ({ strapi }) => {
         }
       });
 
-      strapi.plugin('orama')
+      strapi.plugin('orama-cloud')
         .service('oramaManagerService')
         .afterCreation({ id: entity.id });
 
@@ -64,7 +64,7 @@ module.exports = ({ strapi }) => {
         .where({ id })
         .update(data);
 
-      return await strapi.entityService.findOne('plugin::orama.collection', id);
+      return await strapi.entityService.findOne('plugin::orama-cloud.collection', id);
     },
 
     /**
@@ -88,7 +88,7 @@ module.exports = ({ strapi }) => {
 
       await this.updateWithoutHooks(id, { status: 'outdated' });
 
-      strapi.plugin('orama')
+      strapi.plugin('orama-cloud')
         .service('oramaManagerService')
         .deployIndex({ id });
     }

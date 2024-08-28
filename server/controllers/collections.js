@@ -3,7 +3,7 @@
 module.exports = ({ strapi }) => {
   return {
     async find(ctx) {
-      const collections = await strapi.plugin('orama')
+      const collections = await strapi.plugin('orama-cloud')
         .service('collectionsService')
         .find();
       ctx.send(collections);
@@ -11,7 +11,7 @@ module.exports = ({ strapi }) => {
 
     async findOne(ctx) {
       const { id } = ctx.params;
-      const collection = await strapi.plugin('orama')
+      const collection = await strapi.plugin('orama-cloud')
         .service('collectionsService')
         .findOne(id);
       if (!collection) {
@@ -21,7 +21,7 @@ module.exports = ({ strapi }) => {
     },
 
     async create(ctx) {
-      const collection = await strapi.plugin('orama')
+      const collection = await strapi.plugin('orama-cloud')
         .service('collectionsService')
         .create(ctx.request.body);
       ctx.send(collection);
@@ -29,7 +29,7 @@ module.exports = ({ strapi }) => {
 
     async update(ctx) {
       const { id } = ctx.params;
-      const updatedCollection = await strapi.plugin('orama')
+      const updatedCollection = await strapi.plugin('orama-cloud')
         .service('collectionsService')
         .update(id, ctx.request.body);
       ctx.send(updatedCollection);
@@ -37,7 +37,7 @@ module.exports = ({ strapi }) => {
 
     async delete(ctx) {
       const { id } = ctx.params;
-      const deletedCollection = await strapi.plugin('orama')
+      const deletedCollection = await strapi.plugin('orama-cloud')
         .service('collectionsService')
         .delete(id);
       ctx.send(deletedCollection);
@@ -45,7 +45,7 @@ module.exports = ({ strapi }) => {
 
     async deploy(ctx) {
       const { id } = ctx.params;
-      const collection = await strapi.plugin('orama')
+      const collection = await strapi.plugin('orama-cloud')
         .service('collectionsService')
         .deploy(id);
       ctx.send(collection);

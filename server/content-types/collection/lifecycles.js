@@ -3,12 +3,12 @@ module.exports = {
         const { result } = event;
 
         if (result.updateHook === 'cron') {
-            const cronService = strapi.plugin('orama').service('cronService');
+            const cronService = strapi.plugin('orama-cloud').service('cronService');
             cronService.registerCronJob(result);
         }
 
         if (result.updateHook === 'live') {
-            const liveUpdateService = strapi.plugin('orama').service('liveUpdatesService');
+            const liveUpdateService = strapi.plugin('orama-cloud').service('liveUpdatesService');
             liveUpdateService.registerLifecycleHooks(result);
         }
     },
@@ -17,12 +17,12 @@ module.exports = {
         const { result } = event;
 
         if (result.updateHook === 'cron') {
-            const cronService = strapi.plugin('orama').service('cronService');
+            const cronService = strapi.plugin('orama-cloud').service('cronService');
             cronService.registerCronJob(result);
         }
 
         if (result.updateHook === 'live') {
-            const liveUpdateService = strapi.plugin('orama').service('liveUpdatesService');
+            const liveUpdateService = strapi.plugin('orama-cloud').service('liveUpdatesService');
             liveUpdateService.registerLifecycleHooks(result);
         }
     },
@@ -31,12 +31,12 @@ module.exports = {
         const { result } = event;
 
         if (result.updateHook === 'cron') {
-            const cronService = strapi.plugin('orama').service('cronService');
+            const cronService = strapi.plugin('orama-cloud').service('cronService');
             cronService.registerCronJob(result);
         }
 
         if (result.updateHook === 'live') {
-            const liveUpdateService = strapi.plugin('orama').service('liveUpdatesService');
+            const liveUpdateService = strapi.plugin('orama-cloud').service('liveUpdatesService');
             liveUpdateService.registerLifecycleHooks(result);
         }
     },

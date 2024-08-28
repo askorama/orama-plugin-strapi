@@ -3,9 +3,9 @@
 const registeredCronJobs = new Map();
 
 module.exports = ({ strapi }) => {
-    const oramaService = strapi.plugin('orama').service('oramaManagerService');
-    const collectionService = strapi.plugin('orama').service('collectionsService');
-    const hookManagerService = strapi.plugin('orama').service('hookManagerService');
+    const oramaService = strapi.plugin('orama-cloud').service('oramaManagerService');
+    const collectionService = strapi.plugin('orama-cloud').service('collectionsService');
+    const hookManagerService = strapi.plugin('orama-cloud').service('hookManagerService');
 
     return {
         registerCronJob(collection) {

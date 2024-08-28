@@ -3,10 +3,10 @@
 const cron = require("./cron");
 
 module.exports = ({ strapi }) => {
-    const oramaService = strapi.plugin('orama').service('oramaManagerService');
-    const collectionService = strapi.plugin('orama').service('collectionsService');
-    const cronService = strapi.plugin('orama').service('cronService');
-    const hookManagerService = strapi.plugin('orama').service('hookManagerService');
+    const oramaService = strapi.plugin('orama-cloud').service('oramaManagerService');
+    const collectionService = strapi.plugin('orama-cloud').service('collectionsService');
+    const cronService = strapi.plugin('orama-cloud').service('cronService');
+    const hookManagerService = strapi.plugin('orama-cloud').service('hookManagerService');
 
     return {
         registerLifecycleHooks(collection) {

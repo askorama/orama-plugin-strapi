@@ -3,9 +3,9 @@
 const { CloudManager } = require("@oramacloud/client")
 
 module.exports = ({ strapi }) => {
-  const contentTypesService = strapi.plugin("orama").service("contentTypesService")
-  const collectionService = strapi.plugin("orama").service("collectionsService")
-  const privateApiKey = strapi.config.get("plugin.orama.privateApiKey")
+  const contentTypesService = strapi.plugin("orama-cloud").service("contentTypesService")
+  const collectionService = strapi.plugin("orama-cloud").service("collectionsService")
+  const privateApiKey = strapi.config.get("plugin.orama-cloud.privateApiKey")
 
   const validate = (collection) => {
     if (!collection) {
