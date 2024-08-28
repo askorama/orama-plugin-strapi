@@ -139,6 +139,8 @@ module.exports = ({ strapi }) => {
 
       await updatingStarted(collection)
 
+      await resetIndex(collection)
+
       const documents_count = await bulkInsert(collection)
 
       await deployIndex(collection)
