@@ -28,11 +28,11 @@
     "styled-components": "^5.2.1"
   },
   "author": {
-    "name": "A Strapi developer"
+    "name": "Orama"
   },
   "maintainers": [
     {
-      "name": "A Strapi developer"
+      "name": "Orama"
     }
   ],
   "engines": {
