@@ -60,7 +60,7 @@ module.exports = ({ strapi }) => {
      * @param {object} data
      */
     async updateWithoutHooks(id, data) {
-      await strapi.db.connection('orama_collections')
+      await strapi.db.connection('orama-cloud_collections')
         .where({ id })
         .update(data);
 

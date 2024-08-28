@@ -1,6 +1,6 @@
 {
   "kind": "collectionType",
-  "collectionName": "orama_collections",
+  "collectionName": "orama-cloud_collections",
   "info": {
     "singularName": "collection",
     "pluralName": "collections",
