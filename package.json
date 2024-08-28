@@ -1,10 +1,10 @@
 {
-  "name": "@orama/plugin-strapi",
+  "name": "@oramacloud/plugin-strapi",
   "version": "0.0.1-rc2",
-  "description": "This is the description of the plugin.",
+  "description": "A Strapi plugin to integrate Orama Cloud's search and answers engine, providing seamless search capabilities within your Strapi application.",
   "strapi": {
-    "name": "orama",
-    "description": "Integrate Orama Cloud search and answers engine in your Strapi app.",
+    "name": "orama-cloud",
+    "description": "A Strapi plugin to integrate Orama Cloud's search and answers engine, providing seamless search capabilities within your Strapi application.",
     "kind": "plugin",
     "displayName": "Orama Cloud"
   },
