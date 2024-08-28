@@ -57,6 +57,12 @@ module.exports = ({ strapi }) => {
     strapi.log.info(`Index ${indexId} deployed`)
   }
 
+  const resetIndex = async ({ indexId }) => {
+    const oramaCloudManager = new CloudManager({ api_key: privateApiKey })
+    const index = oramaCloudManager.index(indexId)
+    await index.snapshot([])
+  }
+
   const bulkInsert = async (collection, offset = 0) => {
     const entries = await contentTypesService.getEntries({
       contentType: collection.entity,
@@ -190,6 +196,8 @@ module.exports = ({ strapi }) => {
       strapi.log.debug(`Processing scheduled index update for ${collection.entity} with indexId ${collection.indexId}`)
 
       await updatingStarted(collection)
+
+      await resetIndex(collection)
 
       const documents_count = await bulkInsert(collection)
 
