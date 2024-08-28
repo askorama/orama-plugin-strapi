@@ -13,7 +13,7 @@ module.exports = ({ strapi }) => {
 
     /**
      * Find a collection record by id
-     * @param {string} id 
+     * @param {string} id
      */
     async findOne(id) {
       return strapi.entityService.findOne(ENTITY_NAME, id);
@@ -21,15 +21,21 @@ module.exports = ({ strapi }) => {
 
     /**
      * Create a new collection record
-     * @param {object} data 
+     * @param {object} data
      */
     async create(data) {
-      return strapi.entityService.create(ENTITY_NAME, {
+      const entity = await strapi.entityService.create(ENTITY_NAME, {
         data: {
           ...data,
           status: 'outdated',
         }
       });
+
+      strapi.plugin('orama')
+        .service('oramaManagerService')
+        .afterCreation({ id: entity.id });
+
+      return entity
     },
 
     /**
@@ -49,7 +55,7 @@ module.exports = ({ strapi }) => {
     /**
      * Update the status of a collection record by id
      * without triggering lifecycle hooks.
-     * 
+     *
      * @param {string} id
      * @param {object} data
      */
@@ -63,7 +69,7 @@ module.exports = ({ strapi }) => {
 
     /**
      * Delete a collection record by id
-     * @param {string} id 
+     * @param {string} id
      */
     async delete(id) {
       return strapi.entityService.delete(ENTITY_NAME, id);
@@ -71,7 +77,7 @@ module.exports = ({ strapi }) => {
 
     /**
      * Deploy a collection record by id
-     * @param {string} id 
+     * @param {string} id
      */
     async deploy(id) {
       const collection = await this.findOne(id);
@@ -84,7 +90,7 @@ module.exports = ({ strapi }) => {
 
       strapi.plugin('orama')
         .service('oramaManagerService')
-        .processLiveUpdate({ id });
+        .deployIndex({ id });
     }
   }
 };

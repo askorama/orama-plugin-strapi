@@ -22,17 +22,12 @@ module.exports = ({ strapi }) => {
       }));
     },
 
-    async getEntries(contentType, relations = '') {
-      const entries = await strapi.query(contentType).findMany({
+    async getEntries({ contentType, relations = "", offset = 0, limit = 50 }) {
+      return await strapi.query(contentType).findMany({
         populate: relations ? relations.split(',').map(r => `${r}`.trim()) : [],
+        limit,
+        offset
       });
-
-      strapi.log.debug(`Found ${entries.length} entries for content type ${contentType}`);
-
-      // TODO: remove this log
-      console.log('Documents:', entries);
-
-      return entries;
     }
   }
 };
