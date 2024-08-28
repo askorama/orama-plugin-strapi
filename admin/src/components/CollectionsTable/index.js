@@ -176,7 +176,7 @@ const CollectionsTable = ({ collections, onEditAction, onDeployAction, onCreateA
           action={<Button
             variant="secondary"
             startIcon={<Plus />}
-            onClick={onCreateAction}>Configure your first Orama index</Button>} />
+            onClick={onCreateAction}>Configure your first Orama Cloud index</Button>} />
       )}
 
     </>

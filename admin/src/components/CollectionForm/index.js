@@ -27,10 +27,10 @@ const CollectionForm = ({ collection, editMode, contentTypeOptions, onFieldChang
                     required
                     onChange={(e) => onFieldChange({ name: 'indexId', value: e.target.value })}
                     label="Index ID"
-                    placeholder="Orama Index ID"
+                    placeholder="Orama Cloud Index ID"
                     name="indexId"
                     id="indexId"
-                    hint="Your Orama Index ID. Go to Orama Dashboard > Indexes to find it."
+                    hint="Your Orama Cloud Index ID. Go to Orama Dashboard > Indexes to find it."
                     value={collection?.indexId}
                 />
             </Box>
@@ -43,7 +43,7 @@ const CollectionForm = ({ collection, editMode, contentTypeOptions, onFieldChang
                         placeholder="Content Type"
                         name="entity"
                         id="entity"
-                        hint="Choose the Content Type you want to map with your index on Orama."
+                        hint="Choose the Content Type you want to map with your index on Orama Cloud."
                         value={collection?.entity}
                     >
                         {contentTypeOptions?.length > 0 && contentTypeOptions.map((ct, i) =>

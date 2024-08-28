@@ -184,8 +184,8 @@ const HomePage = () => {
   return (
     <Layout sideNav={null}>
       <HeaderLayout
-        title="Orama"
-        subtitle="Manage collections to sync content types with your indexes on Orama."
+        title="Orama Cloud"
+        subtitle="Manage collections to sync content types with your indexes on Orama Cloud."
         as="h2"
         primaryAction={
           <Flex gap={2}>{
