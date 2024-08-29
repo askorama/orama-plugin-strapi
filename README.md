@@ -1,19 +1,38 @@
-# Orama - Strapi plugin
+# Orama - Strapi Plugin
 
-## Installation
+## Introduction
+The Orama Strapi plugin integrates Orama Cloud's search and answers engine into your Strapi application, providing seamless search capabilities.
 
-- Go to your existing project or create a new Strapi project with `yarn create strapi-app my-strapi-project --quickstart`.
-- Create a folder `src/plugins` if it doesn't already exist.
-- Install Orama Strapi plugin by downloading or cloning this repo into `src/plugins`.
-- Configure the plugin in the `config/plugins.js` file.
+## Installation (via yarn)
 
+1. Go to your existing project or create a new Strapi project with:
+    ```sh
+    yarn create strapi-app my-strapi-project --quickstart
+    ```
+2. Create a folder `src/plugins` if it doesn't already exist.
+3. Install the Orama Strapi plugin:
+    ```sh
+    yarn add @oramacloud/strapi-plugin
+    ```
+
+## Installation (via Strapi Marketplace)
+
+1. Go to your existing project or create a new Strapi project with:
+    ```sh
+    yarn create strapi-app my-strapi-project --quickstart
+    ```
+2. Go to your Strapi administration dashboard.
+3. Navigate to the `Marketplace` section.
+4. Search for `Orama Cloud` and install the plugin.
+
+## Configuration
+
+Configure the plugin in the `config/plugins.js` file:
 ```js
 // config/plugins.js
 
 module.exports = ({ env }) => ({
   orama: {
-    enabled: true,
-    resolve: "./src/plugins/orama-plugin-strapi",
     config: {
       privateApiKey: env('ORAMA_PRIVATE_API_KEY'),
     },
@@ -37,7 +56,7 @@ Configure and manage `Collections` that map your Strapi app Content-Types with a
 
 Collections map your Content-Types on Strapi with an index on Orama Cloud. To keep your index in sync with the data, you can configure the update settings for each collection.
 
-- Select `Orama` from the menu to manage your collections.
+- Select `Orama Cloud` from the menu to manage your collections.
 - Add a new collection.
 
 <img src="./misc/assets/collection.png" alt="Collection form" width="600" />
