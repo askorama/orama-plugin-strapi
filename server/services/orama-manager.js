@@ -137,7 +137,16 @@ module.exports = ({ strapi }) => {
         return
       }
 
-      await updatingStarted(collection)
+      const schema = await contentTypesService.getContentTypeSchema({
+        contentTypeId: collection.entity,
+        includeRelations: collection.includeRelations === true
+      })
+
+      const exampleDoc = await strapi.query(collection.entity).findOne()
+
+      console.log("===DEBUG===", schema, exampleDoc)
+
+      /*await updatingStarted(collection)
 
       await resetIndex(collection)
 
@@ -145,7 +154,7 @@ module.exports = ({ strapi }) => {
 
       await deployIndex(collection)
 
-      await updatingCompleted(collection, documents_count)
+      await updatingCompleted(collection, documents_count)*/
     },
 
     async deployIndex({ id }) {
