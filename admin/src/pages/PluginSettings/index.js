@@ -26,6 +26,8 @@ const HomePage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [contentTypes, setContentTypes] = useState([]);
   const [collections, setCollections] = useState([]);
+  const [schema, setSchema] = useState(null);
+  const [availableRelations, setAvailableRelations] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [currentCollection, setCurrentCollection] = useState(null);
@@ -64,6 +66,46 @@ const HomePage = () => {
     return () => clearInterval(intervalId);
   }, [get]);
 
+  useEffect(() => {
+    if (currentCollection?.entity) {
+      get(`/${pluginId}/content-types/${currentCollection.entity}/schema`)
+        .then(response => setSchema(response.data))
+        .then(() => setIsLoading(false))
+        .catch((err) => {
+          console.error('Failed to load collections.', err);
+          toggleNotification({
+            type: 'warning',
+            message: 'Failed to load content type schema.',
+          });
+        });
+
+      get(`/${pluginId}/content-types/${currentCollection.entity}/relations`)
+        .then(response => setAvailableRelations(response.data))
+        .then(() => setIsLoading(false))
+        .catch((err) => {
+          console.error('Failed to load collections.', err);
+          toggleNotification({
+            type: 'warning',
+            message: 'Failed to load content type schema.',
+          });
+        });
+    }
+
+    if (currentCollection?.includeRelations?.length > 0) {
+      const currentRelationsCSV = currentCollection.includeRelations.join(',')
+      get(`/${pluginId}/content-types/${currentCollection.entity}/schema?includedRelations=${currentRelationsCSV}`)
+        .then(response => setSchema(response.data))
+        .then(() => setIsLoading(false))
+        .catch((err) => {
+          console.error('Failed to load collections.', err);
+          toggleNotification({
+            type: 'warning',
+            message: 'Failed to load content type schema.',
+          });
+        });
+    }
+  }, [currentCollection])
+
   const handleCreateClick = (collection) => {
     setCurrentCollection({
       indexId: undefined,
@@ -93,6 +135,10 @@ const HomePage = () => {
   const handleChange = ({ name, value }) => {
     setCurrentCollection({ ...currentCollection, [name]: value });
   };
+
+  const handleRelationsChange = (relations) => {
+    setCurrentCollection({ ...currentCollection, "includeRelations": relations });
+  }
 
   const handleCreate = async () => {
     setIsSaving(true);
@@ -229,10 +275,13 @@ const HomePage = () => {
                   </ModalHeader>
                   <ModalBody>
                     <CollectionForm
+                      relations={availableRelations}
                       collection={currentCollection}
-                      editMode={formEditMode}
                       contentTypeOptions={contentTypes}
+                      editMode={formEditMode}
                       onFieldChange={handleChange}
+                      onRelationsChange={handleRelationsChange}
+                      schema={schema}
                     />
                   </ModalBody>
                   <ModalFooter

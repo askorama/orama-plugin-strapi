@@ -3,6 +3,7 @@
 const OramaTypesMap = {
   "string": "string",
   "text": "string",
+  "email": "string",
   "richtext": "string",
   "boolean": "boolean",
   "integer": "number",
@@ -24,14 +25,14 @@ const isValidType = (type) => {
   return !["component", "datetime", "media", "blocks", "json"].includes(type)
 }
 
-const isValidRelation = ({ attribute, includeRelations }) => {
-  return attribute.target.startsWith("api::") && includeRelations
+const isValidRelation = ({ attribute, includedRelations }) => {
+  return attribute.target.startsWith("api::") && (includedRelations.includes(attribute.name) || includedRelations === "*")
 }
 
-const shouldAttributeBeIncluded = (attribute, includeRelations) =>
+const shouldAttributeBeIncluded = (attribute, includedRelations) =>
   attribute.type === "relation"
-    ? isValidRelation({ attribute, includeRelations })
-    : isValidType(attribute.type);
+    ? isValidRelation({ attribute, includedRelations })
+    : isValidType(attribute.type)
 
 module.exports = ({ strapi }) => {
   return {
@@ -54,31 +55,56 @@ module.exports = ({ strapi }) => {
       })
     },
 
+    getAvailableRelations({ contentTypeId }) {
+      const contentType = strapi.contentTypes[contentTypeId]
+      const res = Object.entries(contentType.attributes).reduce((relations, [attributeName, attributeValue]) => {
+        if (attributeValue.type === "relation" && isValidRelation({
+          attribute: {
+            name: attributeName,
+            target: attributeValue.target
+          }, includedRelations: "*"
+        })) {
+          relations.push({
+            value: attributeName,
+            label: attributeValue.target
+          })
+        }
+
+        return relations
+      }, [])
+
+      return res
+    },
+
     getType(attribute) {
       if (attribute.type === "relation") {
         return this.getContentTypeSchema({
           contentTypeId: attribute.target,
-          includeRelations: false
+          includedRelations: []
         })
       }
 
       return OramaTypesMap[attribute.type]
     },
 
-    getSchemaFromContentTypeAttributes({ attributes, includeRelations }) {
+    getSchemaFromContentTypeAttributes({ attributes, includedRelations }) {
       return Object.entries(attributes).reduce((schema, [attributeName, attributeValue]) => {
-        if (shouldAttributeBeIncluded(attributeValue, includeRelations)) {
-          schema[attributeName] = this.getType(attributeValue);
+        if (shouldAttributeBeIncluded({
+          type: attributeValue.type,
+          name: attributeName,
+          target: attributeValue.target
+        }, includedRelations)) {
+          schema[attributeName] = this.getType(attributeValue)
         }
-        return schema;
+        return schema
       }, {})
     },
 
-    getContentTypeSchema({ contentTypeId, includeRelations = true }) {
+    getContentTypeSchema({ contentTypeId, includedRelations }) {
       const contentType = strapi.contentTypes[contentTypeId]
       return this.getSchemaFromContentTypeAttributes({
         attributes: contentType.attributes,
-        includeRelations
+        includedRelations
       })
     }
   }
