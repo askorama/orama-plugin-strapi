@@ -44,12 +44,18 @@ module.exports = ({ strapi }) => {
      * @param {object} data
      */
     async update(id, data) {
-      return strapi.entityService.update(ENTITY_NAME, id, {
+      const entity = await strapi.entityService.update(ENTITY_NAME, id, {
         data: {
           ...data,
           status: "outdated",
         }
       })
+
+      strapi.plugin("orama-cloud")
+        .service("oramaManagerService")
+        .afterUpdate({ id: entity.id })
+
+      return entity
     },
 
     /**

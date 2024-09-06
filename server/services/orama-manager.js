@@ -84,7 +84,7 @@ module.exports = ({ strapi }) => {
     return { documents_count: offset }
   }
 
-  const oramaUpdateSchema = async ({ indexId, schema, }) => {
+  const oramaUpdateSchema = async ({ indexId, schema }) => {
     const oramaCloudManager = new CloudManager({ api_key: privateApiKey })
     const index = oramaCloudManager.index(indexId)
     await index.updateSchema(schema)
@@ -152,7 +152,12 @@ module.exports = ({ strapi }) => {
 
       console.log("===DEBUG===", oramaSchema)
 
-      /*await updatingStarted(collection)
+      /*await oramaUpdateSchema({
+        indexId: collection.indexId,
+        schema: oramaSchema
+      })
+
+      await updatingStarted(collection)
 
       await resetIndex(collection)
 
@@ -163,6 +168,26 @@ module.exports = ({ strapi }) => {
       await deployIndex(collection)
 
       await updatingCompleted(collection, documents_count)*/
+    },
+
+    async afterUpdate({ id }) {
+      const collection = await collectionService.findOne(id)
+
+      if (!validate(collection)) {
+        return
+      }
+
+      const oramaSchema = getSchemaFromSearchableAttributes({
+        selectedAttributes: collection.searchableAttributes,
+        schema: collection.schema
+      })
+
+      console.log("===DEBUG===", oramaSchema)
+
+      /*await oramaUpdateSchema({
+        indexId: collection.indexId,
+        schema: oramaSchema
+      })*/
     },
 
     async deployIndex({ id }) {
