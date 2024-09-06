@@ -31,9 +31,9 @@ module.exports = ({ strapi }) => {
         }
       })
 
-      /*strapi.plugin("orama-cloud")
+      strapi.plugin("orama-cloud")
         .service("oramaManagerService")
-        .afterCreation({ id: entity.id })*/
+        .afterCreation({ id: entity.id })
 
       return entity
     },

@@ -34,6 +34,16 @@ const shouldAttributeBeIncluded = (attribute, includedRelations) =>
     ? isValidRelation({ attribute, includedRelations })
     : isValidType(attribute.type)
 
+const getSelectedRelations = ({ schema, relations }) => {
+  return relations.reduce((acc, relation) => {
+    acc[relation] = {
+      select: Object.keys(schema[relation]).map((key) => key)
+    }
+    return acc
+  }, {})
+}
+const getSelectedFieldsConfigObj = (schema) => Object.entries(schema).reduce((acc, [key, value]) => (typeof value === "object" ? acc : [...acc, key]), [])
+
 module.exports = ({ strapi }) => {
   return {
     getContentTypes() {
@@ -46,15 +56,19 @@ module.exports = ({ strapi }) => {
         label: c.info.displayName,
         schema: this.getSchemaFromContentTypeAttributes({
           attributes: strapi.contentTypes[contentType].attributes,
-          includedRelations: '*'
+          includedRelations: "*"
         }),
         availableRelations: this.getAvailableRelations({ contentTypeId: contentType })
       }))
     },
 
-    async getEntries({ contentType, relations = "", offset = 0, limit = 50 }) {
+    async getEntries({ contentType, relations = [], schema, offset = 0, limit = 50 }) {
+      const selectedRelations = getSelectedRelations({ schema, relations })
+      const selectedFields = getSelectedFieldsConfigObj(schema)
+
       return await strapi.query(contentType).findMany({
-        populate: relations ? relations.split(",").map(r => `${r}`.trim()) : [],
+        populate: selectedRelations,
+        select: selectedFields,
         limit,
         offset
       })
