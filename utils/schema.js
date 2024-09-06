@@ -1,5 +1,5 @@
-const getSchemaFromSelectedAttributes = ({ selectedAttributes, schema }) => {
-  return selectedAttributes.reduce((acc, field) => {
+const getSchemaFromAttributes = ({ attributes, schema }) => {
+  return attributes.reduce((acc, field) => {
     if (field.includes(".")) {
       const [parent, child] = field.split(".")
       if (!acc[parent]) {
@@ -7,6 +7,8 @@ const getSchemaFromSelectedAttributes = ({ selectedAttributes, schema }) => {
       }
 
       acc[parent][child] = schema[parent][child]
+    } else if (field === 'id') {
+      acc[field] = 'string'
     } else {
       acc[field] = schema[field]
     }
@@ -25,4 +27,4 @@ const getSelectedAttributesFromSchema = ({ schema }) => {
   }, [])
 }
 
-export { getSchemaFromSelectedAttributes, getSelectedAttributesFromSchema }
+module.exports = { getSchemaFromAttributes, getSelectedAttributesFromSchema }

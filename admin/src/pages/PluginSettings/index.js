@@ -89,7 +89,7 @@ const HomePage = () => {
       indexId: "",
       entity: undefined,
       includedRelations: [],
-      searchableAttributes: [],
+      searchableAttributes: ['id'],
       schema: {},
       status: "outdated",
       updateHook: "live",

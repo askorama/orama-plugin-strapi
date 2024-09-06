@@ -1,7 +1,7 @@
 "use strict"
 
 const { CloudManager } = require("@oramacloud/client")
-const { getSchemaFromSearchableAttributes } = require("../utils/schema")
+const { getSchemaFromAttributes } = require("../../utils/schema")
 
 module.exports = ({ strapi }) => {
   const contentTypesService = strapi.plugin("orama-cloud").service("contentTypesService")
@@ -145,29 +145,27 @@ module.exports = ({ strapi }) => {
         return
       }
 
-      const oramaSchema = getSchemaFromSearchableAttributes({
-        selectedAttributes: collection.searchableAttributes,
+      const oramaSchema = getSchemaFromAttributes({
+        attributes: collection.searchableAttributes,
         schema: collection.schema
       })
 
       console.log("===DEBUG===", oramaSchema)
 
-      /*await oramaUpdateSchema({
-        indexId: collection.indexId,
-        schema: oramaSchema
-      })
-
       await updatingStarted(collection)
 
       await resetIndex(collection)
 
-      await oramaUpdateSchema(collection)
+      /*await oramaUpdateSchema({
+        indexId: collection.indexId,
+        schema: oramaSchema
+      })*/
 
       const { documents_count } = await bulkInsert(collection)
 
       await deployIndex(collection)
 
-      await updatingCompleted(collection, documents_count)*/
+      await updatingCompleted(collection, documents_count)
     },
 
     async afterUpdate({ id }) {
@@ -177,8 +175,8 @@ module.exports = ({ strapi }) => {
         return
       }
 
-      const oramaSchema = getSchemaFromSearchableAttributes({
-        selectedAttributes: collection.searchableAttributes,
+      const oramaSchema = getSchemaFromAttributes({
+        attributes: collection.searchableAttributes,
         schema: collection.schema
       })
 

@@ -1,9 +1,9 @@
 import React from "react"
 import { Box, Checkbox, Flex, Switch, Table, Thead, Tbody, Tr, Th, Td, Typography } from "@strapi/design-system"
 import {
-  getSchemaFromSelectedAttributes,
+  getSchemaFromAttributes,
   getSelectedAttributesFromSchema
-} from "../../utils/schema"
+} from "../../../../utils/schema"
 
 const generateSelectableAttributesFromSchema = ({ schema, relations }) => {
   return Object.entries(schema).reduce((acc, [fieldKey, fieldValue]) => {
@@ -27,7 +27,7 @@ const SchemaMapper = ({
   const [selectedAttributes, setSelectedAttributes] = React.useState(getSelectedAttributesFromSchema({
     schema: collection?.schema
   }))
-  const [searchableAttributes, setSearchableAttributes] = React.useState(collection?.searchableAttributes || [])
+  const [searchableAttributes, setSearchableAttributes] = React.useState(collection?.searchableAttributes || ['id'])
 
   const schemaAttributes = generateSelectableAttributesFromSchema({
     schema: contentTypeSchema,
@@ -35,8 +35,8 @@ const SchemaMapper = ({
   })
 
   React.useEffect(() => {
-    const schema = getSchemaFromSelectedAttributes({
-      selectedAttributes,
+    const schema = getSchemaFromAttributes({
+      attributes: selectedAttributes,
       schema: contentTypeSchema
     })
     onSchemaChange(schema)
