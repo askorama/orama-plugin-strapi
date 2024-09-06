@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react"
 import {
   Box,
   Button,
@@ -14,218 +14,217 @@ import {
   ContentLayout,
   Typography,
   Status
-} from '@strapi/design-system';
-import { ExternalLink, Plus } from '@strapi/icons';
-import { useFetchClient, useNotification } from '@strapi/helper-plugin';
-import CollectionsTable from '../../components/CollectionsTable';
-import pluginId from '../../pluginId';
-import CollectionForm from '../../components/CollectionForm';
+} from "@strapi/design-system"
+import { ExternalLink, Plus } from "@strapi/icons"
+import { useFetchClient, useNotification } from "@strapi/helper-plugin"
+import CollectionsTable from "../../components/CollectionsTable"
+import pluginId from "../../pluginId"
+import CollectionForm from "../../components/CollectionForm"
+
+const isValidCollection = (collection) => {
+  if (!collection.schema || Object.keys(collection.schema).length === 0) {
+    return false
+  }
+
+  if (!!collection.indexId?.length) {
+    return false
+  }
+
+  return true
+}
 
 const HomePage = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [contentTypes, setContentTypes] = useState([]);
-  const [collections, setCollections] = useState([]);
-  const [schema, setSchema] = useState(null);
-  const [availableRelations, setAvailableRelations] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [currentCollection, setCurrentCollection] = useState(null);
-  const [formEditMode, setFormEditMode] = useState(false);
-  const { get, post, put, del } = useFetchClient();
-  const toggleNotification = useNotification();
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [contentTypes, setContentTypes] = useState([])
+  const [collections, setCollections] = useState([])
+  const [currentContentType, setCurrentContentType] = useState(null)
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false)
+  const [currentCollection, setCurrentCollection] = useState(null)
+  const [formEditMode, setFormEditMode] = useState(false)
+  const { get, post, put, del } = useFetchClient()
+  const toggleNotification = useNotification()
 
   const fetchData = () => {
     get(`/${pluginId}/collections`)
       .then(response => setCollections(response.data))
       .then(() => setIsLoading(false))
       .catch((err) => {
-        console.error('Failed to load collections.', err);
+        console.error("Failed to load collections.", err)
         toggleNotification({
-          type: 'warning',
-          message: 'Failed to load collections.',
-        });
-      });
+          type: "warning",
+          message: "Failed to load collections.",
+        })
+      })
 
     get(`/${pluginId}/content-types`)
       .then(response => setContentTypes(response.data))
       .then(() => setIsLoading(false))
       .catch((err) => {
-        console.error('Failed to load collections.', err);
+        console.error("Failed to load collections.", err)
         toggleNotification({
-          type: 'warning',
-          message: 'Failed to load content types.',
-        });
-      });
-  };
+          type: "warning",
+          message: "Failed to load content types.",
+        })
+      })
+  }
 
   useEffect(() => {
-    fetchData();
-    const intervalId = setInterval(fetchData, 5000);
+    fetchData()
+    const intervalId = setInterval(fetchData, 5000)
 
-    return () => clearInterval(intervalId);
-  }, [get]);
+    return () => clearInterval(intervalId)
+  }, [get])
 
   useEffect(() => {
-    if (currentCollection?.entity) {
-      get(`/${pluginId}/content-types/${currentCollection.entity}/schema`)
-        .then(response => setSchema(response.data))
-        .then(() => setIsLoading(false))
-        .catch((err) => {
-          console.error('Failed to load collections.', err);
-          toggleNotification({
-            type: 'warning',
-            message: 'Failed to load content type schema.',
-          });
-        });
-
-      get(`/${pluginId}/content-types/${currentCollection.entity}/relations`)
-        .then(response => setAvailableRelations(response.data))
-        .then(() => setIsLoading(false))
-        .catch((err) => {
-          console.error('Failed to load collections.', err);
-          toggleNotification({
-            type: 'warning',
-            message: 'Failed to load content type schema.',
-          });
-        });
-    }
-
-    if (currentCollection?.includeRelations?.length > 0) {
-      const currentRelationsCSV = currentCollection.includeRelations.join(',')
-      get(`/${pluginId}/content-types/${currentCollection.entity}/schema?includedRelations=${currentRelationsCSV}`)
-        .then(response => setSchema(response.data))
-        .then(() => setIsLoading(false))
-        .catch((err) => {
-          console.error('Failed to load collections.', err);
-          toggleNotification({
-            type: 'warning',
-            message: 'Failed to load content type schema.',
-          });
-        });
+    if (currentCollection) {
+      const contentType = contentTypes.find((ct) => ct.value === currentCollection.entity)
+      setCurrentContentType(contentType)
     }
   }, [currentCollection])
 
-  const handleCreateClick = (collection) => {
+  const handleCreateClick = () => {
     setCurrentCollection({
-      indexId: undefined,
+      indexId: "",
       entity: undefined,
-      includeRelated: false,
-      includeRelatedEntities: undefined,
-      status: 'outdated',
-      updateHook: 'live',
-      updateCron: '0 * * * *',
+      includedRelations: [],
+      searchableAttributes: [],
+      schema: {},
+      status: "outdated",
+      updateHook: "live",
+      updateCron: "0 * * * *",
       deployedAt: undefined,
-    });
-    setFormEditMode(false);
-    setIsModalVisible(true);
-  };
+    })
+    setFormEditMode(false)
+    setIsModalVisible(true)
+  }
 
   const handleEditClick = (collection) => {
-    setCurrentCollection(collection);
-    setFormEditMode(true);
-    setIsModalVisible(true);
-  };
+    setCurrentCollection(collection)
+    setFormEditMode(true)
+    setIsModalVisible(true)
+  }
 
   const handleDeployClick = (collection) => {
-    setCurrentCollection(collection);
-    setShowConfirmationModal(true);
-  };
+    setCurrentCollection(collection)
+    setShowConfirmationModal(true)
+  }
 
   const handleChange = ({ name, value }) => {
-    setCurrentCollection({ ...currentCollection, [name]: value });
-  };
+    setCurrentCollection({ ...currentCollection, [name]: value })
+  }
 
   const handleRelationsChange = (relations) => {
-    setCurrentCollection({ ...currentCollection, "includeRelations": relations });
+    setCurrentCollection({ ...currentCollection, includedRelations: relations })
+  }
+
+  const handleSchemaChange = (attributes) => {
+    setCurrentCollection({ ...currentCollection, schema: attributes })
+  }
+
+  const handleSearchableAttributesChange = (field) => {
+    setCurrentCollection({ ...currentCollection, searchableAttributes: field })
+  }
+
+  const onValidateError = () => {
+    toggleNotification({
+      type: "warning",
+      message: "Please fill in all required attributes.",
+    })
   }
 
   const handleCreate = async () => {
-    setIsSaving(true);
+    if(isValidCollection(currentCollection)) {
+      return onValidateError()
+    }
+
+    setIsSaving(true)
+
     try {
-      const newCollection = await post(`/${pluginId}/collections`, currentCollection);
+      const newCollection = await post(`/${pluginId}/collections`, currentCollection)
       toggleNotification({
-        type: 'success',
-        message: 'Collection created successfully.',
-      });
+        type: "success",
+        message: "Collection created successfully.",
+      })
       setCollections((prevCollections) =>
         [...prevCollections, newCollection.data]
-      );
-      setIsModalVisible(false);
+      )
+      setIsModalVisible(false)
     } catch (err) {
-      console.error(err);
+      console.error(err)
       toggleNotification({
-        type: 'warning',
-        message: 'Failed to create collection.',
-      });
+        type: "warning",
+        message: "Failed to create collection.",
+      })
     } finally {
-      setIsSaving(false);
+      setIsSaving(false)
     }
   }
 
   const handleUpdate = async () => {
-    setIsSaving(true);
+    setIsSaving(true)
     try {
-      const collection = await put(`/${pluginId}/collections/${currentCollection.id}`, currentCollection);
+      const collection = await put(`/${pluginId}/collections/${currentCollection.id}`, currentCollection)
       toggleNotification({
-        type: 'success',
-        message: 'Collection updated successfully.',
-      });
+        type: "success",
+        message: "Collection updated successfully.",
+      })
       setCollections((prevCollections) =>
         prevCollections.map((col) =>
           col.id === collection.data?.id ? collection.data : col
         )
-      );
-      setIsModalVisible(false);
+      )
+      setIsModalVisible(false)
     } catch (err) {
-      console.error(err);
+      console.error(err)
       toggleNotification({
-        type: 'warning',
-        message: 'Failed to update collection.',
-      });
+        type: "warning",
+        message: "Failed to update collection.",
+      })
     } finally {
-      setIsSaving(false);
+      setIsSaving(false)
     }
-  };
+  }
 
   const handleDelete = async () => {
-    setIsModalVisible(false);
+    setIsModalVisible(false)
     try {
-      await del(`/${pluginId}/collections/${currentCollection.id}`);
+      await del(`/${pluginId}/collections/${currentCollection.id}`)
       toggleNotification({
-        type: 'success',
-        message: 'Collection deleted successfully.',
-      });
+        type: "success",
+        message: "Collection deleted successfully.",
+      })
       setCollections((prevCollections) =>
         prevCollections.filter((col) =>
           col.id !== currentCollection.id
         )
-      );
+      )
     } catch (err) {
-      console.error(err);
+      console.error(err)
       toggleNotification({
-        type: 'warning',
-        message: 'Failed to delete collection.',
-      });
+        type: "warning",
+        message: "Failed to delete collection.",
+      })
     }
-  };
+  }
 
   const handleDeploy = async () => {
-    setShowConfirmationModal(false);
+    setShowConfirmationModal(false)
     try {
-      await post(`/${pluginId}/collections/${currentCollection.id}/deploy`);
+      await post(`/${pluginId}/collections/${currentCollection.id}/deploy`)
       toggleNotification({
-        type: 'success',
-        message: 'Collection deployment started.',
-      });
+        type: "success",
+        message: "Collection deployment started.",
+      })
     } catch (err) {
-      console.error(err);
+      console.error(err)
       toggleNotification({
-        type: 'warning',
-        message: 'Failed to deploy collection.',
-      });
+        type: "warning",
+        message: "Failed to deploy collection.",
+      })
     }
-  };
+  }
 
   return (
     <Layout sideNav={null}>
@@ -244,7 +243,7 @@ const HomePage = () => {
                   endIcon={<ExternalLink />}
                   size="L"
                   variant="secondary"
-                  style={{ whiteSpace: 'nowrap', textDecoration: 'none' }}
+                  style={{ whiteSpace: "nowrap", textDecoration: "none" }}
                 >View indexes</LinkButton>
               </>
             )
@@ -254,10 +253,10 @@ const HomePage = () => {
       <ContentLayout>
         <Box background="neutral">
           {isLoading ? (
-            <Flex justifyContent="center">
-              <Loader>Loading content...</Loader>
-            </Flex>
-          ) :
+              <Flex justifyContent="center">
+                <Loader>Loading content...</Loader>
+              </Flex>
+            ) :
             <>
               <CollectionsTable
                 collections={collections}
@@ -275,13 +274,14 @@ const HomePage = () => {
                   </ModalHeader>
                   <ModalBody>
                     <CollectionForm
-                      relations={availableRelations}
                       collection={currentCollection}
                       contentTypeOptions={contentTypes}
+                      currentContentType={currentContentType}
                       editMode={formEditMode}
                       onFieldChange={handleChange}
                       onRelationsChange={handleRelationsChange}
-                      schema={schema}
+                      onSchemaChange={handleSchemaChange}
+                      onSearchableAttributesChange={handleSearchableAttributesChange}
                     />
                   </ModalBody>
                   <ModalFooter
@@ -298,7 +298,7 @@ const HomePage = () => {
                           href={`https://cloud.orama.com/indexes/view/${currentCollection.indexId}`}
                           isExternal
                           endIcon={<ExternalLink width={10} />}
-                          variant="tertiary" style={{ whiteSpace: 'nowrap', textDecoration: 'none' }}
+                          variant="tertiary" style={{ whiteSpace: "nowrap", textDecoration: "none" }}
                         >View index</LinkButton>
                         <Button onClick={handleUpdate} loading={isSaving}>Update</Button>
                       </>
@@ -321,9 +321,11 @@ const HomePage = () => {
                     <Box>
                       <Typography>
                         By doing a manual deploy, your index will be updated immediately<br />
-                        with the most recent data from your Content-Type <Flex inline><Status variant="secondary" size="S" showBullet={false}>
-                          <Typography>{currentCollection.entity}</Typography>
-                        </Status></Flex><br />
+                        with the most recent data from your Content-Type <Flex inline><Status variant="secondary"
+                                                                                              size="S"
+                                                                                              showBullet={false}>
+                        <Typography>{currentCollection.entity}</Typography>
+                      </Status></Flex><br />
                         Do you want to proceed?
                       </Typography>
                     </Box>
@@ -341,7 +343,7 @@ const HomePage = () => {
                           isExternal
                           endIcon={<ExternalLink width={10} />}
                           variant="tertiary"
-                          style={{ whiteSpace: 'nowrap', textDecoration: 'none' }}
+                          style={{ whiteSpace: "nowrap", textDecoration: "none" }}
                         >
                           View index
                         </LinkButton>
@@ -356,7 +358,7 @@ const HomePage = () => {
         </Box>
       </ContentLayout>
     </Layout>
-  );
-};
+  )
+}
 
-export default HomePage;
+export default HomePage

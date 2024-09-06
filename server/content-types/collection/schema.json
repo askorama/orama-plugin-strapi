@@ -38,9 +38,17 @@
       "type": "string",
       "required": true
     },
-    "includeRelations": {
-      "type": "string",
+    "includedRelations": {
+      "type": "json",
       "required": false
+    },
+    "schema": {
+      "type": "json",
+      "required": true
+    },
+    "searchableAttributes": {
+      "type": "json",
+      "required": true
     },
     "documentsCount": {
       "type": "integer",

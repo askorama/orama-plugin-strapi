@@ -44,6 +44,11 @@ module.exports = ({ strapi }) => {
       return Object.entries(contentTypes).map(([contentType, c]) => ({
         value: contentType,
         label: c.info.displayName,
+        schema: this.getSchemaFromContentTypeAttributes({
+          attributes: strapi.contentTypes[contentType].attributes,
+          includedRelations: '*'
+        }),
+        availableRelations: this.getAvailableRelations({ contentTypeId: contentType })
       }))
     },
 

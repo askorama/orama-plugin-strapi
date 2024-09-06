@@ -66,7 +66,7 @@ module.exports = ({ strapi }) => {
   const bulkInsert = async (collection, offset = 0) => {
     const entries = await contentTypesService.getEntries({
       contentType: collection.entity,
-      relations: collection.includeRelations,
+      relations: collection.includedRelations,
       offset,
     })
 
@@ -137,9 +137,11 @@ module.exports = ({ strapi }) => {
         return
       }
 
+      console.log("===DEBUG===", collection.includedRelations)
+
       const schema = await contentTypesService.getContentTypeSchema({
         contentTypeId: collection.entity,
-        includeRelations: collection.includeRelations === true
+        includedRelations: collection.includedRelations
       })
 
       const exampleDoc = await strapi.query(collection.entity).findOne()

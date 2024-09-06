@@ -1,42 +1,66 @@
 import React from "react"
-import { Box, Checkbox, Flex, Switch, Typography } from "@strapi/design-system"
+import { Box, Checkbox, Flex, Switch, Table, Thead, Tbody, Tr, Th, Td, Typography } from "@strapi/design-system"
+import {
+  getSchemaFromSelectedAttributes,
+  getSelectedAttributesFromSchema
+} from "../../utils/schema"
 
-const generateSelectableFieldsFromSchema = ({ schema, relations }) => {
-  console.log("===DEBUG===", schema)
-  const fields = Object.entries(schema).filter(([fieldKey, fieldValue]) => {
-    console.log("===DEBUG===", fieldKey, fieldValue)
-
-    return true
-  })
-
-  return fields
+const generateSelectableAttributesFromSchema = ({ schema, relations }) => {
+  return Object.entries(schema).reduce((acc, [fieldKey, fieldValue]) => {
+    if (typeof fieldValue === "object") {
+      if (relations.includes(fieldKey)) {
+        Object.keys(fieldValue).forEach((key) => acc.push(`${fieldKey}.${key}`))
+      }
+    } else {
+      acc.push(fieldKey)
+    }
+    return acc
+  }, [])
 }
 
-const SchemaMapper = ({ schema = {}, relations = [], onSchemaMappingChange }) => {
-  const [checkedFields, setCheckedFields] = React.useState([])
-  const [searchableFields, setSearchableFields] = React.useState([])
+const SchemaMapper = ({
+  collection,
+  contentTypeSchema,
+  onSchemaChange,
+  onSearchableAttributesChange
+}) => {
+  const [selectedAttributes, setSelectedAttributes] = React.useState(getSelectedAttributesFromSchema({
+    schema: collection?.schema
+  }))
+  const [searchableAttributes, setSearchableAttributes] = React.useState(collection?.searchableAttributes || [])
 
-  const schemaFields = generateSelectableFieldsFromSchema({ schema, relations })
+  const schemaAttributes = generateSelectableAttributesFromSchema({
+    schema: contentTypeSchema,
+    relations: collection?.includedRelations
+  })
 
   React.useEffect(() => {
-    onSchemaMappingChange(checkedFields)
-  }, [checkedFields])
+    const schema = getSchemaFromSelectedAttributes({
+      selectedAttributes,
+      schema: contentTypeSchema
+    })
+    onSchemaChange(schema)
+  }, [selectedAttributes])
+
+  React.useEffect(() => {
+    onSearchableAttributesChange(searchableAttributes)
+  }, [searchableAttributes])
 
   const isChecked = (field) => {
-    return checkedFields.includes(field)
+    return selectedAttributes.includes(field)
   }
 
   const handleCheck = (field) => {
-    if (checkedFields.includes(field)) {
-      setCheckedFields(checkedFields.filter((f) => f !== field))
-      setSearchableFields(searchableFields.filter((f) => f !== field))
+    if (selectedAttributes.includes(field)) {
+      setSelectedAttributes(selectedAttributes.filter((f) => f !== field))
+      setSearchableAttributes(searchableAttributes.filter((f) => f !== field))
     } else {
-      setCheckedFields([...checkedFields, field])
+      setSelectedAttributes([...selectedAttributes, field])
     }
   }
 
   const isSearchableSelected = (field) => {
-    return searchableFields.includes(field)
+    return searchableAttributes.includes(field)
   }
 
   const handleSearchable = (field) => {
@@ -44,60 +68,76 @@ const SchemaMapper = ({ schema = {}, relations = [], onSchemaMappingChange }) =>
       return
     }
 
-    if (searchableFields.includes(field)) {
-      setSearchableFields(searchableFields.filter((f) => f !== field))
+    if (searchableAttributes.includes(field)) {
+      setSearchableAttributes(searchableAttributes.filter((f) => f !== field))
     } else {
-      setSearchableFields([...searchableFields, field])
+      setSearchableAttributes([...searchableAttributes, field])
+    }
+  }
+
+  const selectAllAttributes = () => {
+    if (selectedAttributes.length === schemaAttributes.length) {
+      setSelectedAttributes([])
+      setSearchableAttributes([])
+    } else {
+      setSelectedAttributes(schemaAttributes)
     }
   }
 
   return (
-    <></>
-    /*<Box marginBottom={2}>
-      <Typography variant="beta" fontWeight="bold" >
-        Fields Mapping
+    <Box marginBottom={2}>
+      <Typography variant="beta" fontWeight="bold">
+        Attributes Mapping<b style={{ color: "#ee5e52" }}>*</b>
       </Typography>
       <Flex style={{ marginBottom: 16, marginTop: 4 }}>
         <Typography variant="gamma" color="grey-600">
-          Select the fields you want to include in your Orama Cloud index document.
+          Select the attributes you want to include in your Orama Cloud index document.
         </Typography>
       </Flex>
-      <Flex justifyContent="space-between" style={{ marginBottom: 8 }}>
-        <Flex>
-          <Typography variant="pi" color="grey-600">
-            Fields
-          </Typography>
-        </Flex>
-        <Flex>
-          <Typography variant="pi" color="grey-600">
-            searchable
-          </Typography>
-        </Flex>
-      </Flex>
-      {schemaFields.length > 0 && schemaFields.map((field, i) => (
-        <Flex
-          key={i}
-          gap={10}
-          style={{ marginBottom: i === schemaFields.length - 1 ? 0 : 8 }}
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Flex>
-            <Checkbox checked={isChecked(field)} onChange={() => handleCheck(field)}>
-              <Typography variant="omega" style={{ marginBottom: 4 }}>
-                {field}
-              </Typography>
-            </Checkbox>
-          </Flex>
-          <Flex>
-            <Switch
-              selected={isSearchableSelected(field)}
-              onChange={() => handleSearchable(field)}
-            />
-          </Flex>
-        </Flex>
-      ))}
-    </Box>*/
+      <Box>
+        <Table colCount={3} rowCount={schemaAttributes.length}>
+          <Thead>
+            <Tr>
+              <Th>
+                <Checkbox
+                  aria-label="Select all entries"
+                  checked={selectedAttributes.length === schemaAttributes.length}
+                  onChange={() => selectAllAttributes()}
+                />
+              </Th>
+              <Th style={{ minWidth: "300px" }}>
+                <Typography variant="sigma">Field</Typography>
+              </Th>
+              <Th>
+                <div style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
+                  <Typography variant="sigma">Searchable</Typography>
+                </div>
+              </Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {schemaAttributes.map(field => (
+              <Tr key={field}>
+                <Td>
+                  <Checkbox checked={isChecked(field)} onChange={() => handleCheck(field)} />
+                </Td>
+                <Td onClick={() => handleCheck(field)} style={{ cursor: "pointer" }}>
+                  <Typography textColor="neutral800">{field}</Typography>
+                </Td>
+                <Td>
+                  <Flex justifyContent="flex-end">
+                    <Switch
+                      selected={isSearchableSelected(field)}
+                      onChange={() => handleSearchable(field)}
+                    />
+                  </Flex>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </Box>
+    </Box>
   )
 }
 

@@ -14,7 +14,15 @@ import RelationsSelect from "../RelationsSelect"
 import SchemaMapper from "../SchemaMapper"
 import cronSettings from "../../utils/cronSettings"
 
-const CollectionForm = ({ collection, contentTypeOptions, relations, schema, onFieldChange, onRelationsChange }) => {
+const CollectionForm = ({
+  collection,
+  contentTypeOptions,
+  currentContentType,
+  onFieldChange,
+  onRelationsChange,
+  onSchemaChange,
+  onSearchableAttributesChange
+}) => {
   const [nextRun, setNextRun] = useState("on content update")
   const [cronUpdates, setCronUpdates] = useState(collection?.updateHook === "cron")
 
@@ -35,7 +43,6 @@ const CollectionForm = ({ collection, contentTypeOptions, relations, schema, onF
     <Flex direction="column" alignItems="stretch" gap={6}>
       <Box>
         <TextInput
-          // @ts-ignore
           required
           onChange={(e) => onFieldChange({ name: "indexId", value: e.target.value })}
           label="Index ID"
@@ -65,19 +72,21 @@ const CollectionForm = ({ collection, contentTypeOptions, relations, schema, onF
         </Box>
         <Box width="100%">
           <RelationsSelect
-            relations={relations}
+            relations={currentContentType?.availableRelations}
+            collectionRelations={collection?.includedRelations}
             onChange={onRelationsChange}
           />
         </Box>
       </Flex>
-      {schema && (
+      {currentContentType?.schema && (
         <>
           <Divider />
           <Flex alignItems="flex-start" gap={4}>
             <SchemaMapper
-              relations={relations}
-              schema={schema}
-              onSchemaMappingChange={(fields) => {}}
+              collection={collection}
+              contentTypeSchema={currentContentType?.schema}
+              onSchemaChange={onSchemaChange}
+              onSearchableAttributesChange={onSearchableAttributesChange}
             />
           </Flex>
         </>
@@ -99,7 +108,11 @@ const CollectionForm = ({ collection, contentTypeOptions, relations, schema, onF
             value={collection?.updateHook || "live"}
           >
             <div style={{ marginBottom: "8px" }}><Radio value="live">Live update</Radio></div>
-            <div><Radio value="cron">Scheduled job</Radio></div>
+            <div>
+              <Radio value="cron">
+                Scheduled job
+              </Radio>
+            </div>
           </RadioGroup>
         </Box>
         <Box width="100%">

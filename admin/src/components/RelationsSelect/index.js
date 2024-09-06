@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@strapi/design-system"
 
-const RelationsSelect = ({ onChange, relations = [] }) => (
+const RelationsSelect = ({ onChange, collectionRelations, relations = [] }) => (
   <>
     <Typography variant="pi" fontWeight="bold">
       Include relations
@@ -16,9 +16,13 @@ const RelationsSelect = ({ onChange, relations = [] }) => (
         placeholder="Select relations.."
         disabled={relations.length === 0}
         onChange={onChange}
+        value={collectionRelations}
       >
         {relations.map((relation, i) => (
-          <MultiSelectOption key={relation.value + i} value={relation.value}>
+          <MultiSelectOption
+            key={relation.value + i}
+            value={relation.value}
+          >
             {relation.value}
           </MultiSelectOption>
         ))}
