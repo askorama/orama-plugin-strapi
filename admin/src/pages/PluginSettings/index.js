@@ -283,6 +283,7 @@ const HomePage = () => {
               />
               {isModalVisible && (
                 <ModalLayout
+                  style={{ maxWidth: "700px" }}
                   onClose={() => {
                     setIsModalVisible(false)
                     setCurrentCollection(null)

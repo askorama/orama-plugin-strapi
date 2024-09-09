@@ -83,7 +83,7 @@ const SchemaMapper = ({
   }
 
   return (
-    <Box marginBottom={2}>
+    <Box marginBottom={2} width="100%">
       <Typography variant="beta" fontWeight="bold">
         Attributes Mapping<b style={{ color: "#ee5e52" }}>*</b>
       </Typography>

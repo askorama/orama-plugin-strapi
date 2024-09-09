@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Box,
+  Flex,
   MultiSelect,
   MultiSelectOption,
   Typography,
@@ -11,7 +12,7 @@ const RelationsSelect = ({ onChange, collectionRelations, relations = [] }) => (
     <Typography variant="pi" fontWeight="bold">
       Include relations
     </Typography>
-    <Box style={{ marginTop: 3 }}>
+    <Box style={{ marginTop: 4, width: "100%"}}>
       <MultiSelect
         placeholder="Select relations.."
         disabled={relations.length === 0}
