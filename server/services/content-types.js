@@ -10,6 +10,11 @@ const OramaTypesMap = {
   "biginteger": "number",
   "decimal": "number",
   "float": "number",
+  "uid": "string",
+  "date": "string",
+  "time": "string",
+  "datetime": "string",
+  "enumeration": "enum",
 }
 
 const filterContentTypesAPIs = ({ contentTypes }) => {
@@ -22,17 +27,18 @@ const filterContentTypesAPIs = ({ contentTypes }) => {
 }
 
 const isValidType = (type) => {
-  return !["component", "datetime", "media", "blocks", "json"].includes(type)
+  return !["component", "media", "blocks", "json", "password"].includes(type)
 }
+
+const isIgnoredAttribute = (attribute) => ["publishedAt", "createdAt", "updatedAt"].includes(attribute.name)
 
 const isValidRelation = ({ attribute, includedRelations }) => {
   return attribute.target.startsWith("api::") && (includedRelations.includes(attribute.name) || includedRelations === "*")
 }
 
-const shouldAttributeBeIncluded = (attribute, includedRelations) =>
-  attribute.type === "relation"
-    ? isValidRelation({ attribute, includedRelations })
-    : isValidType(attribute.type)
+const shouldAttributeBeIncluded = (attribute, includedRelations) => {
+  return isValidType(attribute.type) && !isIgnoredAttribute(attribute) && (attribute.type !== "relation" || isValidRelation({ attribute, includedRelations }))
+}
 
 const getSelectedRelations = ({ schema, relations }) => {
   return relations.reduce((acc, relation) => {
