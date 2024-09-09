@@ -137,51 +137,41 @@ module.exports = ({ strapi }) => {
     return await DocumentActionsMap[action]({ indexId, entries: [{ ...rest, id: rest.id.toString() }] }, callback)
   }
 
+  const populateIndex = async ({ id }) => {
+    const collection = await collectionService.findOne(id)
+
+    if (!validate(collection)) {
+      return
+    }
+
+    const oramaSchema = getSchemaFromAttributes({
+      attributes: collection.searchableAttributes,
+      schema: collection.schema
+    })
+
+    await updatingStarted(collection)
+
+    await resetIndex(collection)
+
+    await oramaUpdateSchema({
+      indexId: collection.indexId,
+      schema: oramaSchema
+    })
+
+    const { documents_count } = await bulkInsert(collection)
+
+    await deployIndex(collection)
+
+    await updatingCompleted(collection, documents_count)
+  }
+
   return {
     async afterCreation({ id }) {
-      const collection = await collectionService.findOne(id)
-
-      if (!validate(collection)) {
-        return
-      }
-
-      const oramaSchema = getSchemaFromAttributes({
-        attributes: collection.searchableAttributes,
-        schema: collection.schema
-      })
-
-      await updatingStarted(collection)
-
-      await resetIndex(collection)
-
-      await oramaUpdateSchema({
-        indexId: collection.indexId,
-        schema: oramaSchema
-      })
-
-      const { documents_count } = await bulkInsert(collection)
-
-      await deployIndex(collection)
-
-      await updatingCompleted(collection, documents_count)
+      await populateIndex({ id })
     },
 
     async afterUpdate({ id }) {
-      const collection = await collectionService.findOne(id)
-
-      if (!validate(collection)) {
-        return
-      }
-
-      const oramaSchema = getSchemaFromAttributes({
-        attributes: collection.searchableAttributes,
-        schema: collection.schema
-      })
-
-      await oramaUpdateSchema({
-        indexId: collection.indexId,
-        schema: oramaSchema
-      })
+      await populateIndex({ id })
     },
 
     async deployIndex({ id }) {
