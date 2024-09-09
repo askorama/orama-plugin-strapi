@@ -23,14 +23,26 @@ import CollectionForm from "../../components/CollectionForm"
 
 const isValidCollection = (collection) => {
   if (!collection.schema || Object.keys(collection.schema).length === 0) {
-    return false
+    return {
+      error: "Select at least one attribute"
+    }
   }
 
-  if (!!collection.indexId?.length) {
-    return false
+  if (!collection.searchableAttributes || collection.searchableAttributes.length === 0) {
+    return {
+      error: "Select at least one searchable attribute"
+    }
   }
 
-  return true
+  if (collection.indexId?.length === 0) {
+    return {
+      error: "Index ID is required"
+    }
+  }
+
+  return {
+    error: false
+  }
 }
 
 const HomePage = () => {
@@ -78,7 +90,7 @@ const HomePage = () => {
   }, [get])
 
   useEffect(() => {
-    if (currentCollection) {
+    if (currentCollection && !currentContentType) {
       const contentType = contentTypes.find((ct) => ct.value === currentCollection.entity)
       setCurrentContentType(contentType)
     }
@@ -89,7 +101,7 @@ const HomePage = () => {
       indexId: "",
       entity: undefined,
       includedRelations: [],
-      searchableAttributes: ['id'],
+      searchableAttributes: [],
       schema: {},
       status: "outdated",
       updateHook: "live",
@@ -119,23 +131,23 @@ const HomePage = () => {
     setCurrentCollection({ ...currentCollection, includedRelations: relations })
   }
 
-  const handleSchemaChange = (attributes) => {
-    setCurrentCollection({ ...currentCollection, schema: attributes })
+  const handleSchemaChange = ({ schema, searchableAttributes }) => {
+    setCurrentCollection({
+      ...currentCollection,
+      schema,
+      searchableAttributes
+    })
   }
 
-  const handleSearchableAttributesChange = (field) => {
-    setCurrentCollection({ ...currentCollection, searchableAttributes: field })
-  }
-
-  const onValidateError = () => {
+  const onValidateError = (error) => {
     toggleNotification({
       type: "warning",
-      message: "Please fill in all required attributes.",
+      message: error,
     })
   }
 
   const handleCreate = async () => {
-    if(isValidCollection(currentCollection)) {
+    if (!isValidCollection(currentCollection)) {
       return onValidateError()
     }
 
@@ -163,6 +175,11 @@ const HomePage = () => {
   }
 
   const handleUpdate = async () => {
+    const { error } = isValidCollection(currentCollection)
+    if (error) {
+      return onValidateError(error)
+    }
+
     setIsSaving(true)
     try {
       const collection = await put(`/${pluginId}/collections/${currentCollection.id}`, currentCollection)
@@ -266,7 +283,11 @@ const HomePage = () => {
               />
               {isModalVisible && (
                 <ModalLayout
-                  onClose={() => setIsModalVisible(false)}
+                  onClose={() => {
+                    setIsModalVisible(false)
+                    setCurrentCollection(null)
+                    setCurrentContentType(null)
+                  }}
                   labelledBy="edit-collection-modal"
                 >
                   <ModalHeader>
@@ -281,7 +302,6 @@ const HomePage = () => {
                       onFieldChange={handleChange}
                       onRelationsChange={handleRelationsChange}
                       onSchemaChange={handleSchemaChange}
-                      onSearchableAttributesChange={handleSearchableAttributesChange}
                     />
                   </ModalBody>
                   <ModalFooter

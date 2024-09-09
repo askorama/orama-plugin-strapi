@@ -7,8 +7,6 @@ const getSchemaFromAttributes = ({ attributes, schema }) => {
       }
 
       acc[parent][child] = schema[parent][child]
-    } else if (field === 'id') {
-      acc[field] = 'string'
     } else {
       acc[field] = schema[field]
     }

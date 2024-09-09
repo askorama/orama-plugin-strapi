@@ -21,13 +21,12 @@ const generateSelectableAttributesFromSchema = ({ schema, relations }) => {
 const SchemaMapper = ({
   collection,
   contentTypeSchema,
-  onSchemaChange,
-  onSearchableAttributesChange
+  onSchemaChange
 }) => {
   const [selectedAttributes, setSelectedAttributes] = React.useState(getSelectedAttributesFromSchema({
     schema: collection?.schema
   }))
-  const [searchableAttributes, setSearchableAttributes] = React.useState(collection?.searchableAttributes || ['id'])
+  const [searchableAttributes, setSearchableAttributes] = React.useState(collection?.searchableAttributes || [])
 
   const schemaAttributes = generateSelectableAttributesFromSchema({
     schema: contentTypeSchema,
@@ -39,12 +38,9 @@ const SchemaMapper = ({
       attributes: selectedAttributes,
       schema: contentTypeSchema
     })
-    onSchemaChange(schema)
-  }, [selectedAttributes])
 
-  React.useEffect(() => {
-    onSearchableAttributesChange(searchableAttributes)
-  }, [searchableAttributes])
+    onSchemaChange({ schema, searchableAttributes })
+  }, [searchableAttributes, selectedAttributes])
 
   const isChecked = (field) => {
     return selectedAttributes.includes(field)
@@ -53,7 +49,9 @@ const SchemaMapper = ({
   const handleCheck = (field) => {
     if (selectedAttributes.includes(field)) {
       setSelectedAttributes(selectedAttributes.filter((f) => f !== field))
-      setSearchableAttributes(searchableAttributes.filter((f) => f !== field))
+      if (searchableAttributes.includes(field)) {
+        setSearchableAttributes(searchableAttributes.filter((f) => f !== field))
+      }
     } else {
       setSelectedAttributes([...selectedAttributes, field])
     }
@@ -106,7 +104,7 @@ const SchemaMapper = ({
                 />
               </Th>
               <Th style={{ minWidth: "300px" }}>
-                <Typography variant="sigma">Field</Typography>
+                <Typography variant="sigma">Attribute</Typography>
               </Th>
               <Th>
                 <div style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>

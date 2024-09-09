@@ -42,7 +42,7 @@ const getSelectedRelations = ({ schema, relations }) => {
     return acc
   }, {})
 }
-const getSelectedFieldsConfigObj = (schema) => Object.entries(schema).reduce((acc, [key, value]) => (typeof value === "object" ? acc : [...acc, key]), [])
+const getSelectedFieldsConfigObj = (schema) => Object.entries(schema).reduce((acc, [key, value]) => (typeof value === "object" ? acc : [...acc, key]), ["id"])
 
 module.exports = ({ strapi }) => {
   return {

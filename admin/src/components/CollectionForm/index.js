@@ -20,8 +20,7 @@ const CollectionForm = ({
   currentContentType,
   onFieldChange,
   onRelationsChange,
-  onSchemaChange,
-  onSearchableAttributesChange
+  onSchemaChange
 }) => {
   const [nextRun, setNextRun] = useState("on content update")
   const [cronUpdates, setCronUpdates] = useState(collection?.updateHook === "cron")
@@ -86,7 +85,6 @@ const CollectionForm = ({
               collection={collection}
               contentTypeSchema={currentContentType?.schema}
               onSchemaChange={onSchemaChange}
-              onSearchableAttributesChange={onSearchableAttributesChange}
             />
           </Flex>
         </>
