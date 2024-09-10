@@ -1,6 +1,6 @@
-'use strict';
+"use strict"
 
-const ENTITY_NAME = 'plugin::orama-cloud.collection';
+const ENTITY_NAME = "plugin::orama-cloud.collection"
 
 module.exports = ({ strapi }) => {
   return {
@@ -8,7 +8,7 @@ module.exports = ({ strapi }) => {
      * Find all collection records
      */
     async find() {
-      return strapi.entityService.findMany(ENTITY_NAME);
+      return strapi.entityService.findMany(ENTITY_NAME)
     },
 
     /**
@@ -16,7 +16,7 @@ module.exports = ({ strapi }) => {
      * @param {string} id
      */
     async findOne(id) {
-      return strapi.entityService.findOne(ENTITY_NAME, id);
+      return strapi.entityService.findOne(ENTITY_NAME, id)
     },
 
     /**
@@ -27,13 +27,13 @@ module.exports = ({ strapi }) => {
       const entity = await strapi.entityService.create(ENTITY_NAME, {
         data: {
           ...data,
-          status: 'outdated',
+          status: "outdated",
         }
-      });
+      })
 
-      strapi.plugin('orama-cloud')
-        .service('oramaManagerService')
-        .afterCreation({ id: entity.id });
+      strapi.plugin("orama-cloud")
+        .service("oramaManagerService")
+        .afterCreation({ id: entity.id })
 
       return entity
     },
@@ -44,12 +44,18 @@ module.exports = ({ strapi }) => {
      * @param {object} data
      */
     async update(id, data) {
-      return strapi.entityService.update(ENTITY_NAME, id, {
+      const entity = await strapi.entityService.update(ENTITY_NAME, id, {
         data: {
           ...data,
-          status: 'outdated',
+          status: "outdated",
         }
-      });
+      })
+
+      strapi.plugin("orama-cloud")
+        .service("oramaManagerService")
+        .afterUpdate({ id: entity.id })
+
+      return entity
     },
 
     /**
@@ -60,11 +66,11 @@ module.exports = ({ strapi }) => {
      * @param {object} data
      */
     async updateWithoutHooks(id, data) {
-      await strapi.db.connection('orama-cloud_collections')
+      await strapi.db.connection("orama-cloud_collections")
         .where({ id })
-        .update(data);
+        .update(data)
 
-      return await strapi.entityService.findOne('plugin::orama-cloud.collection', id);
+      return await strapi.entityService.findOne("plugin::orama-cloud.collection", id)
     },
 
     /**
@@ -72,7 +78,7 @@ module.exports = ({ strapi }) => {
      * @param {string} id
      */
     async delete(id) {
-      return strapi.entityService.delete(ENTITY_NAME, id);
+      return strapi.entityService.delete(ENTITY_NAME, id)
     },
 
     /**
@@ -80,17 +86,17 @@ module.exports = ({ strapi }) => {
      * @param {string} id
      */
     async deploy(id) {
-      const collection = await this.findOne(id);
+      const collection = await this.findOne(id)
 
       if (!collection) {
-        throw new Error(`Collection with id ${id} not found`);
+        throw new Error(`Collection with id ${id} not found`)
       }
 
-      await this.updateWithoutHooks(id, { status: 'outdated' });
+      await this.updateWithoutHooks(id, { status: "outdated" })
 
-      strapi.plugin('orama-cloud')
-        .service('oramaManagerService')
-        .deployIndex({ id });
+      strapi.plugin("orama-cloud")
+        .service("oramaManagerService")
+        .deployIndex({ id })
     }
   }
-};
+}

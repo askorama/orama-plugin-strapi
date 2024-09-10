@@ -46,5 +46,21 @@ module.exports = [
     config: {
       policies: [],
     },
+  },
+  {
+    method: 'GET',
+    path: '/content-types/:id/relations',
+    handler: 'contentTypesController.getAvailableRelations',
+    config: {
+      policies: [],
+    },
+  },
+  {
+    method: 'GET',
+    path: '/content-types/:id/schema',
+    handler: 'contentTypesController.getContentTypesSchema',
+    config: {
+      policies: [],
+    },
   }
 ];

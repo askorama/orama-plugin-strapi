@@ -1,6 +1,7 @@
 "use strict"
 
 const { CloudManager } = require("@oramacloud/client")
+const { getSchemaFromAttributes } = require("../../utils/schema")
 
 module.exports = ({ strapi }) => {
   const contentTypesService = strapi.plugin("orama-cloud").service("contentTypesService")
@@ -66,7 +67,8 @@ module.exports = ({ strapi }) => {
   const bulkInsert = async (collection, offset = 0) => {
     const entries = await contentTypesService.getEntries({
       contentType: collection.entity,
-      relations: collection.includeRelations,
+      relations: collection.includedRelations,
+      schema: collection.schema,
       offset,
     })
 
@@ -79,7 +81,13 @@ module.exports = ({ strapi }) => {
       return await bulkInsert(collection, offset + entries.length)
     }
 
-    return offset
+    return { documents_count: offset }
+  }
+
+  const oramaUpdateSchema = async ({ indexId, schema }) => {
+    const oramaCloudManager = new CloudManager({ api_key: privateApiKey })
+    const index = oramaCloudManager.index(indexId)
+    await index.updateSchema({ schema })
   }
 
   const oramaInsert = async ({ indexId, entries }, callback) => {
@@ -129,23 +137,41 @@ module.exports = ({ strapi }) => {
     return await DocumentActionsMap[action]({ indexId, entries: [{ ...rest, id: rest.id.toString() }] }, callback)
   }
 
+  const populateIndex = async ({ id }) => {
+    const collection = await collectionService.findOne(id)
+
+    if (!validate(collection)) {
+      return
+    }
+
+    const oramaSchema = getSchemaFromAttributes({
+      attributes: collection.searchableAttributes,
+      schema: collection.schema
+    })
+
+    await updatingStarted(collection)
+
+    await resetIndex(collection)
+
+    await oramaUpdateSchema({
+      indexId: collection.indexId,
+      schema: oramaSchema
+    })
+
+    const { documents_count } = await bulkInsert(collection)
+
+    await deployIndex(collection)
+
+    await updatingCompleted(collection, documents_count)
+  }
+
   return {
     async afterCreation({ id }) {
-      const collection = await collectionService.findOne(id)
+      await populateIndex({ id })
+    },
 
-      if (!validate(collection)) {
-        return
-      }
-
-      await updatingStarted(collection)
-
-      await resetIndex(collection)
-
-      const documents_count = await bulkInsert(collection)
-
-      await deployIndex(collection)
-
-      await updatingCompleted(collection, documents_count)
+    async afterUpdate({ id }) {
+      await populateIndex({ id })
     },
 
     async deployIndex({ id }) {
@@ -201,7 +227,7 @@ module.exports = ({ strapi }) => {
 
       await resetIndex(collection)
 
-      const documents_count = await bulkInsert(collection)
+      const { documents_count } = await bulkInsert(collection)
 
       await updatingCompleted(collection, documents_count)
 
