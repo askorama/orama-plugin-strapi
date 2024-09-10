@@ -39,7 +39,7 @@ Configure the plugin in the `config/plugins.js` file:
 // config/plugins.js
 
 module.exports = ({ env }) => ({
-  orama: {
+  "orama-cloud": {
     config: {
       privateApiKey: env('ORAMA_PRIVATE_API_KEY'),
     },
