@@ -1,8 +1,8 @@
-# Orama - Strapi Plugin
+# Orama Cloud - Strapi Plugin
 
 ## Introduction
 
-The Orama Strapi plugin integrates Orama Cloud's search and answers engine into your Strapi application, providing
+The Orama Cloud Strapi plugin integrates Orama Cloud's search and answers engine into your Strapi application, providing
 seamless search capabilities.
 
 ## Installation (via package manager)
@@ -47,8 +47,7 @@ module.exports = ({ env }) => ({
 });
 ```
 
-You can configure your `ORAMA_PRIVATE_API_KEY` in [Developer tools](https://cloud.orama.com/developer-tools) page on
-Orama Cloud.
+Your `ORAMA_PRIVATE_API_KEY` will be automatically generated when you create the index. You can also generate a new Private API Key in [Developer tools](https://cloud.orama.com/developer-tools) page on Orama Cloud.
 
 ## Usage
 
@@ -57,17 +56,16 @@ on [Orama Cloud](https://cloud.orama.com/indexes).
 
 ### Creating an index
 
-- Visit Orama Cloud and [Create](https://cloud.orama.com/indexes/create/from-integrations) a new "REST API" index.
-- Define the searchable properties in the schema. This schema reflects your Strapi's model fields that should be
-  searchable.
-- Once your index is ready, copy the `indexId` and visit your Strapi administration dashboard.
+- Visit Orama Cloud and [Create](https://cloud.orama.com/indexes/create/from-native-integrations) a new index with data source "**Strapi**".
+- Once your index is ready, copy your Private API Key and configure it in your app's `config/plugins.js` configuration file.
+- Copy the `indexId` and visit your Strapi administration dashboard to configure your first collection.
 
 ### Managing collections
 
 Collections map your Content-Types on Strapi with an index on Orama Cloud. To keep your index in sync with the data, you
 can configure the update settings for each collection.
 
-- Select `Orama Cloud` from the menu to manage your collections.
+- Select `Orama Cloud` from your Strapi admin menu to manage your collections.
 - Add a new collection.
 
 <img src="https://raw.githubusercontent.com/askorama/orama-plugin-strapi/main/misc/assets/collection.png" alt="Collection form" width="600" />
@@ -75,6 +73,7 @@ can configure the update settings for each collection.
 - Paste your newly created `indexId`.
 - Select a Content Type.
 - (Optional) Specify the related records to include.
+- Configure your document schema and your searchable properties.
 - Select the Update Settings option:
   - **Live updates** will update your index as soon as any content is created, updated or deleted.
   - **Scheduled job** will automatically update your index at a defined frequency: every 30 minutes, hourly, daily,
