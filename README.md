@@ -1,11 +1,14 @@
-# Orama Cloud - Strapi Plugin
+# Orama Cloud plugin for Strapi
+
+[![Build](https://github.com//askorama/orama-plugin-strapi/actions/workflows/build.yml/badge.svg)](https://github.com//askorama/orama-plugin-strapi/actions/workflows/build.yml)
+
 
 ## Introduction
 
-The Orama Cloud Strapi plugin integrates Orama Cloud's search and answers engine into your Strapi application, providing
+This [Strapi](https://strapi.io/) plugin integrates Orama Cloud's search and answers engine into your Strapi application, providing
 seamless search capabilities.
 
-## Installation (via package manager)
+### Installation (via package manager)
 
 **npm**
 
@@ -25,7 +28,7 @@ seamless search capabilities.
     pnpm add @oramacloud/strapi-plugin
  ```
 
-## Installation (via Strapi Marketplace)
+### Installation (via Strapi Marketplace)
 
 1. Go to your Strapi administration dashboard.
 2. Navigate to the `Marketplace` section.
@@ -54,10 +57,12 @@ Your `ORAMA_PRIVATE_API_KEY` will be automatically generated when you create the
 Configure and manage `Collections` that map your Strapi app Content-Types with an Index
 on [Orama Cloud](https://cloud.orama.com/indexes).
 
+Check out the documentation: [Connect to Strapi](https://docs.orama.com/cloud/data-sources/native-integrations/strapi)
+
 ### Creating an index
 
 - Visit Orama Cloud and [Create](https://cloud.orama.com/indexes/create/from-native-integrations) a new index with data source "**Strapi**".
-- Once your index is ready, copy your Private API Key and configure it in your app's `config/plugins.js` configuration file.
+- Once your index is ready, copy your **Private API Key** and configure it in your app's `config/plugins.js` configuration file.
 - Copy the `indexId` and visit your Strapi administration dashboard to configure your first collection.
 
 ### Managing collections
@@ -71,7 +76,7 @@ can configure the update settings for each collection.
 <img src="https://raw.githubusercontent.com/askorama/orama-plugin-strapi/main/misc/assets/collection.png" alt="Collection form" width="600" />
 
 - Paste your newly created `indexId`.
-- Select a Content Type.
+- Select a **Content Type**.
 - (Optional) Specify the related records to include.
 - Configure your document schema and your searchable properties.
 - Select the Update Settings option:
