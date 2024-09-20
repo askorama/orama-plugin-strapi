@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const collection = require('./collection');
+const collection = require('./collection')
 
 module.exports = {
-    collection,
-};
+  collection
+}

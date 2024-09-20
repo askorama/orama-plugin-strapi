@@ -1,3 +1,3 @@
-const pluginId = 'orama-cloud';
+const pluginId = 'orama-cloud'
 
-export default pluginId;
+export default pluginId

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from 'react'
 import {
   Box,
   Button,
@@ -14,29 +14,29 @@ import {
   ContentLayout,
   Typography,
   Status
-} from "@strapi/design-system"
-import { ExternalLink, Plus } from "@strapi/icons"
-import { useFetchClient, useNotification } from "@strapi/helper-plugin"
-import CollectionsTable from "../../components/CollectionsTable"
-import pluginId from "../../pluginId"
-import CollectionForm from "../../components/CollectionForm"
+} from '@strapi/design-system'
+import { ExternalLink, Plus } from '@strapi/icons'
+import { useFetchClient, useNotification } from '@strapi/helper-plugin'
+import CollectionsTable from '../../components/CollectionsTable'
+import pluginId from '../../pluginId'
+import CollectionForm from '../../components/CollectionForm'
 
 const isValidCollection = (collection) => {
   if (!collection.schema || Object.keys(collection.schema).length === 0) {
     return {
-      error: "Select at least one attribute"
+      error: 'Select at least one attribute'
     }
   }
 
   if (!collection.searchableAttributes || collection.searchableAttributes.length === 0) {
     return {
-      error: "Select at least one searchable attribute"
+      error: 'Select at least one searchable attribute'
     }
   }
 
   if (collection.indexId?.length === 0) {
     return {
-      error: "Index ID is required"
+      error: 'Index ID is required'
     }
   }
 
@@ -60,24 +60,24 @@ const HomePage = () => {
 
   const fetchData = () => {
     get(`/${pluginId}/collections`)
-      .then(response => setCollections(response.data))
+      .then((response) => setCollections(response.data))
       .then(() => setIsLoading(false))
       .catch((err) => {
-        console.error("Failed to load collections.", err)
+        console.error('Failed to load collections.', err)
         toggleNotification({
-          type: "warning",
-          message: "Failed to load collections.",
+          type: 'warning',
+          message: 'Failed to load collections.'
         })
       })
 
     get(`/${pluginId}/content-types`)
-      .then(response => setContentTypes(response.data))
+      .then((response) => setContentTypes(response.data))
       .then(() => setIsLoading(false))
       .catch((err) => {
-        console.error("Failed to load collections.", err)
+        console.error('Failed to load collections.', err)
         toggleNotification({
-          type: "warning",
-          message: "Failed to load content types.",
+          type: 'warning',
+          message: 'Failed to load content types.'
         })
       })
   }
@@ -98,15 +98,15 @@ const HomePage = () => {
 
   const handleCreateClick = () => {
     setCurrentCollection({
-      indexId: "",
+      indexId: '',
       entity: undefined,
       includedRelations: [],
       searchableAttributes: [],
       schema: {},
-      status: "outdated",
-      updateHook: "live",
-      updateCron: "0 * * * *",
-      deployedAt: undefined,
+      status: 'outdated',
+      updateHook: 'live',
+      updateCron: '0 * * * *',
+      deployedAt: undefined
     })
     setFormEditMode(false)
     setIsModalVisible(true)
@@ -128,7 +128,10 @@ const HomePage = () => {
   }
 
   const handleRelationsChange = (relations) => {
-    setCurrentCollection({ ...currentCollection, includedRelations: relations })
+    setCurrentCollection({
+      ...currentCollection,
+      includedRelations: relations
+    })
   }
 
   const handleSchemaChange = ({ schema, searchableAttributes }) => {
@@ -141,8 +144,8 @@ const HomePage = () => {
 
   const onValidateError = (error) => {
     toggleNotification({
-      type: "warning",
-      message: error,
+      type: 'warning',
+      message: error
     })
   }
 
@@ -156,18 +159,16 @@ const HomePage = () => {
     try {
       const newCollection = await post(`/${pluginId}/collections`, currentCollection)
       toggleNotification({
-        type: "success",
-        message: "Collection created successfully.",
+        type: 'success',
+        message: 'Collection created successfully.'
       })
-      setCollections((prevCollections) =>
-        [...prevCollections, newCollection.data]
-      )
+      setCollections((prevCollections) => [...prevCollections, newCollection.data])
       setIsModalVisible(false)
     } catch (err) {
       console.error(err)
       toggleNotification({
-        type: "warning",
-        message: "Failed to create collection.",
+        type: 'warning',
+        message: 'Failed to create collection.'
       })
     } finally {
       setIsSaving(false)
@@ -184,20 +185,18 @@ const HomePage = () => {
     try {
       const collection = await put(`/${pluginId}/collections/${currentCollection.id}`, currentCollection)
       toggleNotification({
-        type: "success",
-        message: "Collection updated successfully.",
+        type: 'success',
+        message: 'Collection updated successfully.'
       })
       setCollections((prevCollections) =>
-        prevCollections.map((col) =>
-          col.id === collection.data?.id ? collection.data : col
-        )
+        prevCollections.map((col) => (col.id === collection.data?.id ? collection.data : col))
       )
       setIsModalVisible(false)
     } catch (err) {
       console.error(err)
       toggleNotification({
-        type: "warning",
-        message: "Failed to update collection.",
+        type: 'warning',
+        message: 'Failed to update collection.'
       })
     } finally {
       setIsSaving(false)
@@ -209,19 +208,15 @@ const HomePage = () => {
     try {
       await del(`/${pluginId}/collections/${currentCollection.id}`)
       toggleNotification({
-        type: "success",
-        message: "Collection deleted successfully.",
+        type: 'success',
+        message: 'Collection deleted successfully.'
       })
-      setCollections((prevCollections) =>
-        prevCollections.filter((col) =>
-          col.id !== currentCollection.id
-        )
-      )
+      setCollections((prevCollections) => prevCollections.filter((col) => col.id !== currentCollection.id))
     } catch (err) {
       console.error(err)
       toggleNotification({
-        type: "warning",
-        message: "Failed to delete collection.",
+        type: 'warning',
+        message: 'Failed to delete collection.'
       })
     }
   }
@@ -231,14 +226,14 @@ const HomePage = () => {
     try {
       await post(`/${pluginId}/collections/${currentCollection.id}/deploy`)
       toggleNotification({
-        type: "success",
-        message: "Collection deployment started.",
+        type: 'success',
+        message: 'Collection deployment started.'
       })
     } catch (err) {
       console.error(err)
       toggleNotification({
-        type: "warning",
-        message: "Failed to deploy collection.",
+        type: 'warning',
+        message: 'Failed to deploy collection.'
       })
     }
   }
@@ -250,30 +245,34 @@ const HomePage = () => {
         subtitle="Manage collections to sync content types with your indexes on Orama Cloud."
         as="h2"
         primaryAction={
-          <Flex gap={2}>{
-            isLoading ? null : (
+          <Flex gap={2}>
+            {isLoading ? null : (
               <>
-                <Button startIcon={<Plus />} size="L" onClick={handleCreateClick}>Add collection</Button>
+                <Button startIcon={<Plus />} size="L" onClick={handleCreateClick}>
+                  Add collection
+                </Button>
                 <LinkButton
                   href="https://cloud.orama.com/indexes"
                   isExternal
                   endIcon={<ExternalLink />}
                   size="L"
                   variant="secondary"
-                  style={{ whiteSpace: "nowrap", textDecoration: "none" }}
-                >View indexes</LinkButton>
+                  style={{ whiteSpace: 'nowrap', textDecoration: 'none' }}
+                >
+                  View indexes
+                </LinkButton>
               </>
-            )
-          }</Flex>
+            )}
+          </Flex>
         }
       />
       <ContentLayout>
         <Box background="neutral">
           {isLoading ? (
-              <Flex justifyContent="center">
-                <Loader>Loading content...</Loader>
-              </Flex>
-            ) :
+            <Flex justifyContent="center">
+              <Loader>Loading content...</Loader>
+            </Flex>
+          ) : (
             <>
               <CollectionsTable
                 collections={collections}
@@ -283,7 +282,7 @@ const HomePage = () => {
               />
               {isModalVisible && (
                 <ModalLayout
-                  style={{ maxWidth: "700px" }}
+                  style={{ maxWidth: '700px' }}
                   onClose={() => {
                     setIsModalVisible(false)
                     setCurrentCollection(null)
@@ -306,26 +305,42 @@ const HomePage = () => {
                     />
                   </ModalBody>
                   <ModalFooter
-                    startActions={formEditMode ? (
-                      <Button onClick={handleDelete} variant="danger-light">
-                        Delete collection
-                      </Button>
-                    ) : (<Button onClick={() => setIsModalVisible(false)} variant="tertiary">
-                      Cancel
-                    </Button>)}
-                    endActions={formEditMode ? (
-                      <>
-                        <LinkButton
-                          href={`https://cloud.orama.com/indexes/view/${currentCollection.indexId}`}
-                          isExternal
-                          endIcon={<ExternalLink width={10} />}
-                          variant="tertiary" style={{ whiteSpace: "nowrap", textDecoration: "none" }}
-                        >View index</LinkButton>
-                        <Button onClick={handleUpdate} loading={isSaving}>Update</Button>
-                      </>
-                    ) : (
-                      <Button onClick={handleCreate} loading={isSaving}>Create</Button>
-                    )}
+                    startActions={
+                      formEditMode ? (
+                        <Button onClick={handleDelete} variant="danger-light">
+                          Delete collection
+                        </Button>
+                      ) : (
+                        <Button onClick={() => setIsModalVisible(false)} variant="tertiary">
+                          Cancel
+                        </Button>
+                      )
+                    }
+                    endActions={
+                      formEditMode ? (
+                        <>
+                          <LinkButton
+                            href={`https://cloud.orama.com/indexes/view/${currentCollection.indexId}`}
+                            isExternal
+                            endIcon={<ExternalLink width={10} />}
+                            variant="tertiary"
+                            style={{
+                              whiteSpace: 'nowrap',
+                              textDecoration: 'none'
+                            }}
+                          >
+                            View index
+                          </LinkButton>
+                          <Button onClick={handleUpdate} loading={isSaving}>
+                            Update
+                          </Button>
+                        </>
+                      ) : (
+                        <Button onClick={handleCreate} loading={isSaving}>
+                          Create
+                        </Button>
+                      )
+                    }
                   />
                 </ModalLayout>
               )}
@@ -341,12 +356,15 @@ const HomePage = () => {
                   <ModalBody>
                     <Box>
                       <Typography>
-                        By doing a manual deploy, your index will be updated immediately<br />
-                        with the most recent data from your Content-Type <Flex inline><Status variant="secondary"
-                                                                                              size="S"
-                                                                                              showBullet={false}>
-                        <Typography>{currentCollection.entity}</Typography>
-                      </Status></Flex><br />
+                        By doing a manual deploy, your index will be updated immediately
+                        <br />
+                        with the most recent data from your Content-Type{' '}
+                        <Flex inline>
+                          <Status variant="secondary" size="S" showBullet={false}>
+                            <Typography>{currentCollection.entity}</Typography>
+                          </Status>
+                        </Flex>
+                        <br />
                         Do you want to proceed?
                       </Typography>
                     </Box>
@@ -364,18 +382,23 @@ const HomePage = () => {
                           isExternal
                           endIcon={<ExternalLink width={10} />}
                           variant="tertiary"
-                          style={{ whiteSpace: "nowrap", textDecoration: "none" }}
+                          style={{
+                            whiteSpace: 'nowrap',
+                            textDecoration: 'none'
+                          }}
                         >
                           View index
                         </LinkButton>
-                        <Button onClick={handleDeploy} variant="primary">Deploy now</Button>
+                        <Button onClick={handleDeploy} variant="primary">
+                          Deploy now
+                        </Button>
                       </Flex>
                     }
                   />
                 </ModalLayout>
               )}
             </>
-          }
+          )}
         </Box>
       </ContentLayout>
     </Layout>

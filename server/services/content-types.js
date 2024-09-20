@@ -1,25 +1,25 @@
-"use strict"
+'use strict'
 
 const OramaTypesMap = {
-  "string": "string",
-  "text": "string",
-  "email": "string",
-  "richtext": "string",
-  "boolean": "boolean",
-  "integer": "number",
-  "biginteger": "number",
-  "decimal": "number",
-  "float": "number",
-  "uid": "string",
-  "date": "string",
-  "time": "string",
-  "datetime": "string",
-  "enumeration": "enum",
+  string: 'string',
+  text: 'string',
+  email: 'string',
+  richtext: 'string',
+  boolean: 'boolean',
+  integer: 'number',
+  biginteger: 'number',
+  decimal: 'number',
+  float: 'number',
+  uid: 'string',
+  date: 'string',
+  time: 'string',
+  datetime: 'string',
+  enumeration: 'enum'
 }
 
 const filterContentTypesAPIs = ({ contentTypes }) => {
   return Object.keys(contentTypes).reduce((sanitized, contentType) => {
-    if (contentType.startsWith("api::")) {
+    if (contentType.startsWith('api::')) {
       sanitized[contentType] = contentTypes[contentType]
     }
     return sanitized
@@ -27,17 +27,23 @@ const filterContentTypesAPIs = ({ contentTypes }) => {
 }
 
 const isValidType = (type) => {
-  return !["component", "media", "blocks", "json", "password"].includes(type)
+  return !['component', 'media', 'blocks', 'json', 'password'].includes(type)
 }
 
-const isIgnoredAttribute = (attribute) => ["publishedAt", "createdAt", "updatedAt"].includes(attribute.name)
+const isIgnoredAttribute = (attribute) => ['publishedAt', 'createdAt', 'updatedAt'].includes(attribute.name)
 
 const isValidRelation = ({ attribute, includedRelations }) => {
-  return attribute.target.startsWith("api::") && (includedRelations.includes(attribute.name) || includedRelations === "*")
+  return (
+    attribute.target.startsWith('api::') && (includedRelations.includes(attribute.name) || includedRelations === '*')
+  )
 }
 
 const shouldAttributeBeIncluded = (attribute, includedRelations) => {
-  return isValidType(attribute.type) && !isIgnoredAttribute(attribute) && (attribute.type !== "relation" || isValidRelation({ attribute, includedRelations }))
+  return (
+    isValidType(attribute.type) &&
+    !isIgnoredAttribute(attribute) &&
+    (attribute.type !== 'relation' || isValidRelation({ attribute, includedRelations }))
+  )
 }
 
 const getSelectedRelations = ({ schema, relations }) => {
@@ -48,23 +54,26 @@ const getSelectedRelations = ({ schema, relations }) => {
     return acc
   }, {})
 }
-const getSelectedFieldsConfigObj = (schema) => Object.entries(schema).reduce((acc, [key, value]) => (typeof value === "object" ? acc : [...acc, key]), ["id"])
+const getSelectedFieldsConfigObj = (schema) =>
+  Object.entries(schema).reduce((acc, [key, value]) => (typeof value === 'object' ? acc : [...acc, key]), ['id'])
 
 module.exports = ({ strapi }) => {
   return {
     getContentTypes() {
       const contentTypes = filterContentTypesAPIs({
-        contentTypes: strapi.contentTypes,
+        contentTypes: strapi.contentTypes
       })
 
       return Object.entries(contentTypes).map(([contentType, c]) => ({
         value: contentType,
         label: c.info.displayName,
         schema: this.getSchemaFromContentTypeAttributes({
-          attributes: strapi.contentTypes[contentType].attributes,
-          includedRelations: "*"
+          attributes: c.attributes,
+          includedRelations: '*'
         }),
-        availableRelations: this.getAvailableRelations({ contentTypeId: contentType })
+        availableRelations: this.getAvailableRelations({
+          contentTypeId: contentType
+        })
       }))
     },
 
@@ -83,12 +92,16 @@ module.exports = ({ strapi }) => {
     getAvailableRelations({ contentTypeId }) {
       const contentType = strapi.contentTypes[contentTypeId]
       const res = Object.entries(contentType.attributes).reduce((relations, [attributeName, attributeValue]) => {
-        if (attributeValue.type === "relation" && isValidRelation({
-          attribute: {
-            name: attributeName,
-            target: attributeValue.target
-          }, includedRelations: "*"
-        })) {
+        if (
+          attributeValue.type === 'relation' &&
+          isValidRelation({
+            attribute: {
+              name: attributeName,
+              target: attributeValue.target
+            },
+            includedRelations: '*'
+          })
+        ) {
           relations.push({
             value: attributeName,
             label: attributeValue.target
@@ -102,7 +115,7 @@ module.exports = ({ strapi }) => {
     },
 
     getType(attribute) {
-      if (attribute.type === "relation") {
+      if (attribute.type === 'relation') {
         return this.getContentTypeSchema({
           contentTypeId: attribute.target,
           includedRelations: []
@@ -114,11 +127,16 @@ module.exports = ({ strapi }) => {
 
     getSchemaFromContentTypeAttributes({ attributes, includedRelations }) {
       return Object.entries(attributes).reduce((schema, [attributeName, attributeValue]) => {
-        if (shouldAttributeBeIncluded({
-          type: attributeValue.type,
-          name: attributeName,
-          target: attributeValue.target
-        }, includedRelations)) {
+        if (
+          shouldAttributeBeIncluded(
+            {
+              type: attributeValue.type,
+              name: attributeName,
+              target: attributeValue.target
+            },
+            includedRelations
+          )
+        ) {
           schema[attributeName] = this.getType(attributeValue)
         }
         return schema

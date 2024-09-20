@@ -5,11 +5,11 @@
  *
  */
 
-import React from 'react';
-import { Switch, Route } from 'react-router-dom';
-import { AnErrorOccurred } from '@strapi/helper-plugin';
-import pluginId from '../../pluginId';
-import PluginSettings from '../PluginSettings';
+import React from 'react'
+import { Switch, Route } from 'react-router-dom'
+import { AnErrorOccurred } from '@strapi/helper-plugin'
+import pluginId from '../../pluginId'
+import PluginSettings from '../PluginSettings'
 
 const App = () => {
   return (
@@ -19,7 +19,7 @@ const App = () => {
         <Route component={AnErrorOccurred} />
       </Switch>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App

@@ -1,13 +1,10 @@
-import React from "react"
-import { Box, Checkbox, Flex, Switch, Table, Thead, Tbody, Tr, Th, Td, Typography } from "@strapi/design-system"
-import {
-  getSchemaFromAttributes,
-  getSelectedAttributesFromSchema
-} from "../../../../utils/schema"
+import React from 'react'
+import { Box, Checkbox, Flex, Switch, Table, Thead, Tbody, Tr, Th, Td, Typography } from '@strapi/design-system'
+import { getSchemaFromAttributes, getSelectedAttributesFromSchema } from '../../../../utils/schema'
 
 const generateSelectableAttributesFromSchema = ({ schema, relations }) => {
   return Object.entries(schema).reduce((acc, [fieldKey, fieldValue]) => {
-    if (typeof fieldValue === "object") {
+    if (typeof fieldValue === 'object') {
       if (relations.includes(fieldKey)) {
         Object.keys(fieldValue).forEach((key) => acc.push(`${fieldKey}.${key}`))
       }
@@ -18,14 +15,12 @@ const generateSelectableAttributesFromSchema = ({ schema, relations }) => {
   }, [])
 }
 
-const SchemaMapper = ({
-  collection,
-  contentTypeSchema,
-  onSchemaChange
-}) => {
-  const [selectedAttributes, setSelectedAttributes] = React.useState(getSelectedAttributesFromSchema({
-    schema: collection?.schema
-  }))
+const SchemaMapper = ({ collection, contentTypeSchema, onSchemaChange }) => {
+  const [selectedAttributes, setSelectedAttributes] = React.useState(
+    getSelectedAttributesFromSchema({
+      schema: collection?.schema
+    })
+  )
   const [searchableAttributes, setSearchableAttributes] = React.useState(collection?.searchableAttributes || [])
 
   const schemaAttributes = generateSelectableAttributesFromSchema({
@@ -85,7 +80,7 @@ const SchemaMapper = ({
   return (
     <Box marginBottom={2} width="100%">
       <Typography variant="beta" fontWeight="bold">
-        Attributes Mapping<b style={{ color: "#ee5e52" }}>*</b>
+        Attributes Mapping<b style={{ color: '#ee5e52' }}>*</b>
       </Typography>
       <Flex style={{ marginBottom: 16, marginTop: 4 }}>
         <Typography variant="gamma" color="grey-600">
@@ -103,31 +98,34 @@ const SchemaMapper = ({
                   onChange={() => selectAllAttributes()}
                 />
               </Th>
-              <Th style={{ minWidth: "300px" }}>
+              <Th style={{ minWidth: '300px' }}>
                 <Typography variant="sigma">Attribute</Typography>
               </Th>
               <Th>
-                <div style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    width: '100%'
+                  }}
+                >
                   <Typography variant="sigma">Searchable</Typography>
                 </div>
               </Th>
             </Tr>
           </Thead>
           <Tbody>
-            {schemaAttributes.map(field => (
+            {schemaAttributes.map((field) => (
               <Tr key={field}>
                 <Td>
                   <Checkbox checked={isChecked(field)} onChange={() => handleCheck(field)} />
                 </Td>
-                <Td onClick={() => handleCheck(field)} style={{ cursor: "pointer" }}>
+                <Td onClick={() => handleCheck(field)} style={{ cursor: 'pointer' }}>
                   <Typography textColor="neutral800">{field}</Typography>
                 </Td>
                 <Td>
                   <Flex justifyContent="flex-end">
-                    <Switch
-                      selected={isSearchableSelected(field)}
-                      onChange={() => handleSearchable(field)}
-                    />
+                    <Switch selected={isSearchableSelected(field)} onChange={() => handleSearchable(field)} />
                   </Flex>
                 </Td>
               </Tr>
