@@ -1,146 +1,151 @@
-"use strict"
+'use strict'
 
-const { CloudManager } = require("@oramacloud/client")
-const { getSchemaFromAttributes } = require("../../utils/schema")
+const { CloudManager } = require('@oramacloud/client')
+const { getSchemaFromAttributes } = require('../../utils/schema')
 
-module.exports = ({ strapi }) => {
-  const contentTypesService = strapi.plugin("orama-cloud").service("contentTypesService")
-  const collectionService = strapi.plugin("orama-cloud").service("collectionsService")
-  const privateApiKey = strapi.config.get("plugin.orama-cloud.privateApiKey")
+class OramaManager {
+  constructor({ strapi }) {
+    this.strapi = strapi
+    this.contentTypesService = strapi.plugin('orama-cloud').service('contentTypesService')
+    this.collectionService = strapi.plugin('orama-cloud').service('collectionsService')
+    this.privateApiKey = strapi.config.get('plugin.orama-cloud.privateApiKey')
 
-  const validate = (collection) => {
+    this.oramaCloudManager = new CloudManager({ api_key: this.privateApiKey })
+    this.DocumentActionsMap = {
+      create: this.oramaInsert.bind(this),
+      update: this.oramaUpdate.bind(this),
+      delete: this.oramaDelete.bind(this)
+    }
+  }
+
+  validate(collection) {
     if (!collection) {
-      strapi.log.error(`Collection not found`)
+      this.strapi.log.error(`Collection not found`)
       return false
     }
 
-    if (!privateApiKey) {
-      strapi.log.error("Private API key is required to process index updates")
+    if (!this.privateApiKey) {
+      this.strapi.log.error('Private API key is required to process index updates')
       return false
     }
 
-    if (collection.status === "updating") {
-      strapi.log.debug(`SKIP: Collection ${collection.entity} with indexId ${collection.indexId} is already updating`)
+    if (collection.status === 'updating') {
+      this.strapi.log.debug(
+        `SKIP: Collection ${collection.entity} with indexId ${collection.indexId} is already updating`
+      )
       return false
     }
 
-    if (collection.status === "updated") {
-      strapi.log.debug(`SKIP: Collection ${collection.entity} with indexId ${collection.indexId} is already updated`)
+    if (collection.status === 'updated') {
+      this.strapi.log.debug(
+        `SKIP: Collection ${collection.entity} with indexId ${collection.indexId} is already updated`
+      )
       return false
     }
 
     return true
   }
 
-  const setOutdated = async (collection) => {
-    return await collectionService.updateWithoutHooks(collection.id, {
-      status: "outdated"
+  async setOutdated(collection) {
+    return await this.collectionService.updateWithoutHooks(collection.id, {
+      status: 'outdated'
     })
   }
 
-  const updatingStarted = async (collection) => {
-    return await collectionService.updateWithoutHooks(collection.id, { status: "updating" })
+  async updatingStarted(collection) {
+    return await this.collectionService.updateWithoutHooks(collection.id, {
+      status: 'updating'
+    })
   }
 
-  const updatingCompleted = async (collection, documents_count) => {
-    return await collectionService.updateWithoutHooks(collection.id, {
-      status: "updated",
+  async updatingCompleted(collection, documents_count) {
+    return await this.collectionService.updateWithoutHooks(collection.id, {
+      status: 'updated',
       deployed_at: new Date().getTime(),
       ...(documents_count && { documents_count })
     })
   }
 
-  const deployIndex = async ({ indexId }) => {
-    const oramaCloudManager = new CloudManager({ api_key: privateApiKey })
-    const index = oramaCloudManager.index(indexId)
-    await index.deploy()
+  async oramaDeployIndex({ indexId }) {
+    const index = this.oramaCloudManager.index(indexId)
+    const result = await index.deploy()
 
-    strapi.log.info(`Index ${indexId} deployed`)
+    this.strapi.log.info(`Index ${indexId} deployed`)
+
+    return result
   }
 
-  const resetIndex = async ({ indexId }) => {
-    const oramaCloudManager = new CloudManager({ api_key: privateApiKey })
-    const index = oramaCloudManager.index(indexId)
-    await index.snapshot([])
+  async resetIndex({ indexId }) {
+    const index = this.oramaCloudManager.index(indexId)
+    return await index.snapshot([])
   }
 
-  const bulkInsert = async (collection, offset = 0) => {
-    const entries = await contentTypesService.getEntries({
+  async bulkInsert(collection, offset = 0) {
+    const entries = await this.contentTypesService.getEntries({
       contentType: collection.entity,
       relations: collection.includedRelations,
       schema: collection.schema,
-      offset,
+      offset
     })
 
     if (entries.length > 0) {
-      await oramaInsert({
+      await this.oramaInsert({
         indexId: collection.indexId,
         entries
-      }, null)
+      })
 
-      return await bulkInsert(collection, offset + entries.length)
+      return await this.bulkInsert(collection, offset + entries.length)
     }
 
     return { documents_count: offset }
   }
 
-  const oramaUpdateSchema = async ({ indexId, schema }) => {
-    const oramaCloudManager = new CloudManager({ api_key: privateApiKey })
-    const index = oramaCloudManager.index(indexId)
+  async oramaUpdateSchema({ indexId, schema }) {
+    const index = this.oramaCloudManager.index(indexId)
     await index.updateSchema({ schema })
   }
 
-  const oramaInsert = async ({ indexId, entries }, callback) => {
-    const oramaCloudManager = new CloudManager({ api_key: privateApiKey })
-    const index = oramaCloudManager.index(indexId)
-    await index.insert(entries)
+  async oramaInsert({ indexId, entries }) {
+    const index = this.oramaCloudManager.index(indexId)
+    const result = await index.insert(entries)
 
-    await callback?.()
+    this.strapi.log.info(`INSERT: documents with id ${entries.map(({ id }) => id)} into index ${indexId}`)
 
-    strapi.log.info(`INSERT: documents with id ${entries.map(({ id }) => id)} into index ${indexId}`)
+    return result
   }
 
-  const oramaUpdate = async ({ indexId, entries }, callback) => {
-    const oramaCloudManager = new CloudManager({ api_key: privateApiKey })
-    const index = oramaCloudManager.index(indexId)
+  async oramaUpdate({ indexId, entries }) {
+    const index = this.oramaCloudManager.index(indexId)
+    const result = await index.update(entries)
 
-    await index.update(entries)
+    this.strapi.log.info(`UPDATE: document with id ${entries.map(({ id }) => id)} into index ${indexId}`)
 
-    await callback?.()
-
-    strapi.log.info(`UPDATE: document with id ${entries.map(({ id }) => id)} into index ${indexId}`)
+    return result
   }
 
-  const oramaDelete = async ({ indexId, entries }, callback) => {
-    const oramaCloudManager = new CloudManager({ api_key: privateApiKey })
-    const index = oramaCloudManager.index(indexId)
-    await index.delete(entries.map(({ id }) => id))
+  async oramaDelete({ indexId, entries }) {
+    const index = this.oramaCloudManager.index(indexId)
+    const result = await index.delete(entries.map(({ id }) => id))
 
-    await callback?.()
+    this.strapi.log.info(`DELETE: document with id ${entries.map(({ id }) => id)} from index ${indexId}`)
 
-    strapi.log.info(`DELETE: document with id ${entries.map(({ id }) => id)} from index ${indexId}`)
+    return result
   }
 
-  const DocumentActionsMap = {
-    create: oramaInsert,
-    update: oramaUpdate,
-    delete: oramaDelete
-  }
-
-  const handleDocument = async ({ indexId, record, action }, callback) => {
-    if (!action || !record || !DocumentActionsMap[action]) {
-      return
+  async handleDocument({ indexId, record, action }) {
+    if (!action || !record || !this.DocumentActionsMap[action]) {
+      return false
     }
 
     const { createdBy, updatedBy, ...rest } = record
 
-    return await DocumentActionsMap[action]({ indexId, entries: [{ ...rest, id: rest.id.toString() }] }, callback)
+    return await this.DocumentActionsMap[action]({ indexId, entries: [{ ...rest, id: rest.id.toString() }] })
   }
 
-  const populateIndex = async ({ id }) => {
-    const collection = await collectionService.findOne(id)
+  async afterCollectionCreationOrUpdate({ id }) {
+    const collection = await this.collectionService.findOne(id)
 
-    if (!validate(collection)) {
+    if (!this.validate(collection)) {
       return
     }
 
@@ -149,89 +154,93 @@ module.exports = ({ strapi }) => {
       schema: collection.schema
     })
 
-    await updatingStarted(collection)
+    await this.updatingStarted(collection)
 
-    await resetIndex(collection)
+    await this.resetIndex(collection)
 
-    await oramaUpdateSchema({
+    await this.oramaUpdateSchema({
       indexId: collection.indexId,
       schema: oramaSchema
     })
 
-    const { documents_count } = await bulkInsert(collection)
+    const { documents_count } = await this.bulkInsert(collection)
 
-    await deployIndex(collection)
+    await this.oramaDeployIndex(collection)
 
-    await updatingCompleted(collection, documents_count)
+    await this.updatingCompleted(collection, documents_count)
   }
 
-  return {
-    async afterCreation({ id }) {
-      await populateIndex({ id })
-    },
+  async deployIndex({ id }) {
+    const collection = await this.collectionService.findOne(id)
 
-    async afterUpdate({ id }) {
-      await populateIndex({ id })
-    },
+    this.strapi.log.debug(
+      `Processing scheduled index update for ${collection.entity} with indexId ${collection.indexId}`
+    )
 
-    async deployIndex({ id }) {
-      const collection = await collectionService.findOne(id)
-
-      strapi.log.debug(`Processing scheduled index update for ${collection.entity} with indexId ${collection.indexId}`)
-
-      if (!validate(collection)) {
-        return
-      }
-
-      await updatingStarted(collection)
-
-      await deployIndex(collection)
-
-      await updatingCompleted(collection)
-
-      strapi.log.debug(`UPDATE: ${collection.entity} with indexId ${collection.indexId} completed`)
-    },
-
-    async processLiveUpdate({ id }, record, action) {
-      const collection = await collectionService.findOne(id)
-
-      if (!validate(collection)) {
-        return
-      }
-
-      strapi.log.debug(`Processing live update for ${collection.entity} with indexId ${collection.indexId}`)
-
-      await updatingStarted(collection)
-
-      await handleDocument({
-        indexId: collection.indexId,
-        record,
-        action
-      }, async () => {
-        await setOutdated(collection)
-      })
-
-      strapi.log.debug(`Live update for ${collection.entity} with indexId ${collection.indexId} completed`)
-    },
-
-    async processScheduledUpdate({ id }) {
-      const collection = await collectionService.findOne(id)
-
-      if (!validate(collection)) {
-        return
-      }
-
-      strapi.log.debug(`Processing scheduled index update for ${collection.entity} with indexId ${collection.indexId}`)
-
-      await updatingStarted(collection)
-
-      await resetIndex(collection)
-
-      const { documents_count } = await bulkInsert(collection)
-
-      await updatingCompleted(collection, documents_count)
-
-      strapi.log.debug(`Scheduled update for ${collection.entity} with indexId ${collection.indexId} completed`)
+    if (!this.validate(collection)) {
+      return
     }
+
+    await this.updatingStarted(collection)
+
+    await this.oramaDeployIndex(collection)
+
+    await this.updatingCompleted(collection)
+
+    this.strapi.log.debug(`UPDATE: ${collection.entity} with indexId ${collection.indexId} completed`)
   }
+
+  async processLiveUpdate({ id }, record, action) {
+    const collection = await this.collectionService.findOne(id)
+
+    if (!this.validate(collection)) {
+      return
+    }
+
+    this.strapi.log.debug(`Processing live update for ${collection.entity} with indexId ${collection.indexId}`)
+
+    await this.updatingStarted(collection)
+
+    const handleDocumentResult = await this.handleDocument({
+      indexId: collection.indexId,
+      record,
+      action
+    })
+
+    if (!handleDocumentResult) {
+      await this.setOutdated(collection)
+      return
+    }
+
+    await this.setOutdated(collection)
+
+    this.strapi.log.debug(`Live update for ${collection.entity} with indexId ${collection.indexId} completed`)
+  }
+
+  async processScheduledUpdate({ id }) {
+    const collection = await this.collectionService.findOne(id)
+
+    if (!this.validate(collection)) {
+      return
+    }
+
+    this.strapi.log.debug(
+      `Processing scheduled index update for ${collection.entity} with indexId ${collection.indexId}`
+    )
+
+    await this.updatingStarted(collection)
+
+    await this.resetIndex(collection)
+
+    const { documents_count } = await this.bulkInsert(collection)
+
+    await this.updatingCompleted(collection, documents_count)
+
+    this.strapi.log.debug(`Scheduled update for ${collection.entity} with indexId ${collection.indexId} completed`)
+  }
+}
+
+module.exports = {
+  OramaManager,
+  service: ({ strapi }) => new OramaManager({ strapi })
 }

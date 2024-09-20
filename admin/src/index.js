@@ -1,11 +1,11 @@
 // @ts-nocheck
-import { prefixPluginTranslations } from '@strapi/helper-plugin';
-import pluginPkg from '../../package.json';
-import pluginId from './pluginId';
-import Initializer from './components/Initializer';
-import PluginIcon from './components/PluginIcon';
+import { prefixPluginTranslations } from '@strapi/helper-plugin'
+import pluginPkg from '../../package.json'
+import pluginId from './pluginId'
+import Initializer from './components/Initializer'
+import PluginIcon from './components/PluginIcon'
 
-const name = pluginPkg.strapi.displayName;
+const name = pluginPkg.strapi.displayName
 
 export default {
   register(app) {
@@ -14,12 +14,12 @@ export default {
       icon: PluginIcon,
       intlLabel: {
         id: `${pluginId}.plugin.name`,
-        defaultMessage: name,
+        defaultMessage: name
       },
       Component: async () => {
-        const component = await import('./pages/App');
+        const component = await import('./pages/App')
 
-        return component;
+        return component
       },
       permissions: [
         // Uncomment to set the permissions of the plugin here
@@ -27,17 +27,17 @@ export default {
         //   action: '', // the action name should be plugin::plugin-name.actionType
         //   subject: null,
         // },
-      ],
-    });
+      ]
+    })
     app.registerPlugin({
       id: pluginId,
       initializer: Initializer,
       isReady: false,
-      name,
-    });
+      name
+    })
   },
 
-  bootstrap(app) { },
+  bootstrap(app) {},
   async registerTrads({ locales }) {
     const importedTrads = await Promise.all(
       locales.map((locale) => {
@@ -45,18 +45,18 @@ export default {
           .then(({ default: data }) => {
             return {
               data: prefixPluginTranslations(data, pluginId),
-              locale,
-            };
+              locale
+            }
           })
           .catch(() => {
             return {
               data: {},
-              locale,
-            };
-          });
+              locale
+            }
+          })
       })
-    );
+    )
 
-    return Promise.resolve(importedTrads);
-  },
-};
+    return Promise.resolve(importedTrads)
+  }
+}

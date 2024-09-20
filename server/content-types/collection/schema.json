@@ -26,11 +26,7 @@
     },
     "status": {
       "type": "enumeration",
-      "enum": [
-        "outdated",
-        "updating",
-        "updated"
-      ],
+      "enum": ["outdated", "updating", "updated"],
       "default": "outdated",
       "required": true
     },
@@ -56,10 +52,7 @@
     },
     "updateHook": {
       "type": "enumeration",
-      "enum": [
-        "live",
-        "cron"
-      ],
+      "enum": ["live", "cron"],
       "default": "live",
       "required": true
     },

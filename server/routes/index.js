@@ -4,63 +4,63 @@ module.exports = [
     path: '/collections',
     handler: 'collectionsController.find',
     config: {
-      policies: [],
-    },
+      policies: []
+    }
   },
   {
     method: 'POST',
     path: '/collections',
     handler: 'collectionsController.create',
     config: {
-      policies: [],
-    },
+      policies: []
+    }
   },
   {
     method: 'PUT',
     path: '/collections/:id',
     handler: 'collectionsController.update',
     config: {
-      policies: [],
-    },
+      policies: []
+    }
   },
   {
     method: 'DELETE',
     path: '/collections/:id',
     handler: 'collectionsController.delete',
     config: {
-      policies: [],
-    },
+      policies: []
+    }
   },
   {
     method: 'POST',
     path: '/collections/:id/deploy',
     handler: 'collectionsController.deploy',
     config: {
-      policies: [],
-    },
+      policies: []
+    }
   },
   {
     method: 'GET',
     path: '/content-types',
     handler: 'contentTypesController.getContentTypes',
     config: {
-      policies: [],
-    },
+      policies: []
+    }
   },
   {
     method: 'GET',
     path: '/content-types/:id/relations',
     handler: 'contentTypesController.getAvailableRelations',
     config: {
-      policies: [],
-    },
+      policies: []
+    }
   },
   {
     method: 'GET',
     path: '/content-types/:id/schema',
     handler: 'contentTypesController.getContentTypesSchema',
     config: {
-      policies: [],
-    },
+      policies: []
+    }
   }
-];
+]

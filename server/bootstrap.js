@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 
 module.exports = async ({ strapi }) => {
-  const cronService = strapi.plugin('orama-cloud').service('cronService');
-  const liveUpdatesService = strapi.plugin('orama-cloud').service('liveUpdatesService');
+  const cronService = strapi.plugin('orama-cloud').service('cronService')
+  const liveUpdatesService = strapi.plugin('orama-cloud').service('liveUpdatesService')
 
   /**
    * Setup strapi lifecycle hooks for all the content types
@@ -12,9 +12,9 @@ module.exports = async ({ strapi }) => {
     where: {
       updateHook: 'live'
     }
-  });
+  })
 
-  liveUpdates.forEach(collection => liveUpdatesService.registerLifecycleHooks(collection));
+  liveUpdates.forEach((collection) => liveUpdatesService.registerLifecycleHooks(collection))
 
   /**
    * Setup cron jobs for collections with updateHook = "cron"
@@ -24,7 +24,7 @@ module.exports = async ({ strapi }) => {
     where: {
       updateHook: 'cron'
     }
-  });
+  })
 
-  scheduledUpdates.forEach(collection => cronService.registerCronJob(collection));
-};
+  scheduledUpdates.forEach((collection) => cronService.registerCronJob(collection))
+}

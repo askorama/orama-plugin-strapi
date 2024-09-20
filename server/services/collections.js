@@ -1,6 +1,6 @@
-"use strict"
+'use strict'
 
-const ENTITY_NAME = "plugin::orama-cloud.collection"
+const ENTITY_NAME = 'plugin::orama-cloud.collection'
 
 module.exports = ({ strapi }) => {
   return {
@@ -27,13 +27,11 @@ module.exports = ({ strapi }) => {
       const entity = await strapi.entityService.create(ENTITY_NAME, {
         data: {
           ...data,
-          status: "outdated",
+          status: 'outdated'
         }
       })
 
-      strapi.plugin("orama-cloud")
-        .service("oramaManagerService")
-        .afterCreation({ id: entity.id })
+      strapi.plugin('orama-cloud').service('oramaManagerService').afterCollectionCreationOrUpdate({ id: entity.id })
 
       return entity
     },
@@ -47,13 +45,11 @@ module.exports = ({ strapi }) => {
       const entity = await strapi.entityService.update(ENTITY_NAME, id, {
         data: {
           ...data,
-          status: "outdated",
+          status: 'outdated'
         }
       })
 
-      strapi.plugin("orama-cloud")
-        .service("oramaManagerService")
-        .afterUpdate({ id: entity.id })
+      strapi.plugin('orama-cloud').service('oramaManagerService').afterCollectionCreationOrUpdate({ id: entity.id })
 
       return entity
     },
@@ -66,11 +62,9 @@ module.exports = ({ strapi }) => {
      * @param {object} data
      */
     async updateWithoutHooks(id, data) {
-      await strapi.db.connection("orama-cloud_collections")
-        .where({ id })
-        .update(data)
+      await strapi.db.connection('orama-cloud_collections').where({ id }).update(data)
 
-      return await strapi.entityService.findOne("plugin::orama-cloud.collection", id)
+      return await strapi.entityService.findOne('plugin::orama-cloud.collection', id)
     },
 
     /**
@@ -92,11 +86,9 @@ module.exports = ({ strapi }) => {
         throw new Error(`Collection with id ${id} not found`)
       }
 
-      await this.updateWithoutHooks(id, { status: "outdated" })
+      await this.updateWithoutHooks(id, { status: 'outdated' })
 
-      strapi.plugin("orama-cloud")
-        .service("oramaManagerService")
-        .deployIndex({ id })
+      strapi.plugin('orama-cloud').service('oramaManagerService').deployIndex({ id })
     }
   }
 }
