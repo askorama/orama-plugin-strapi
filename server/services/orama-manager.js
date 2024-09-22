@@ -61,7 +61,7 @@ class OramaManager {
   async updatingCompleted(collection, documents_count) {
     return await this.collectionService.updateWithoutHooks(collection.id, {
       status: 'updated',
-      deployed_at: new Date().getTime(),
+      deployed_at: new Date(),
       ...(documents_count && { documents_count })
     })
   }

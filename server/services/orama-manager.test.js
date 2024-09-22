@@ -131,7 +131,7 @@ describe('OramaManager', () => {
 
       expect(collectionService.updateWithoutHooks).toHaveBeenCalledWith(mockCollection.id, {
         status: 'updated',
-        deployed_at: expect.any(Number),
+        deployed_at: expect.any(Date),
         documents_count: 1
       })
     })
