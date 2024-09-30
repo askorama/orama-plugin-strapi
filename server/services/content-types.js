@@ -47,7 +47,9 @@ const shouldAttributeBeIncluded = (attribute, includedRelations) => {
 }
 
 const getSelectedRelations = ({ schema, relations }) => {
-  return relations.reduce((acc, relation) => {
+  return relations
+    .filter((relation) => relation in schema)
+    .reduce((acc, relation) => {
     acc[relation] = {
       select: Object.keys(schema[relation]).map((key) => key)
     }
