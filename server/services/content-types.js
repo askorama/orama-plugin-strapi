@@ -50,11 +50,11 @@ const getSelectedRelations = ({ schema, relations }) => {
   return relations
     .filter((relation) => relation in schema)
     .reduce((acc, relation) => {
-    acc[relation] = {
-      select: Object.keys(schema[relation]).map((key) => key)
-    }
-    return acc
-  }, {})
+      acc[relation] = {
+        select: Object.keys(schema[relation]).map((key) => key)
+      }
+      return acc
+    }, {})
 }
 const getSelectedFieldsConfigObj = (schema) =>
   Object.entries(schema).reduce((acc, [key, value]) => (typeof value === 'object' ? acc : [...acc, key]), ['id'])
