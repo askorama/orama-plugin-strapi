@@ -48,12 +48,16 @@ const shouldAttributeBeIncluded = (attribute, includedRelations) => {
 
 const getSelectedRelations = ({ schema, relations }) => {
   return relations.reduce((acc, relation) => {
-    acc[relation] = {
-      select: Object.keys(schema[relation]).map((key) => key)
+    if (relation in schema) {
+      acc[relation] = {
+        select: Object.keys(schema[relation]).map((key) => key)
+      }
     }
+
     return acc
   }, {})
 }
+
 const getSelectedFieldsConfigObj = (schema) =>
   Object.entries(schema).reduce((acc, [key, value]) => (typeof value === 'object' ? acc : [...acc, key]), ['id'])
 
