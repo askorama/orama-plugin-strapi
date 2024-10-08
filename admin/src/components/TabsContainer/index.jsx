@@ -1,28 +1,31 @@
-import React, { useRef } from 'react'
-import { Tab, Tabs, TabGroup, TabPanel, TabPanels, Divider, Box, Flex } from '@strapi/design-system'
+import React, { useRef } from "react"
+import { Tabs, Divider, Box } from "@strapi/design-system"
 
 export const TabsContainer = ({ tabs }) => {
   const tabGroupRef = useRef()
 
   return (
-    <TabGroup label="todo" id="tabs" variant="simple" style={{ marginTop: -24 }} ref={tabGroupRef}>
-      <Flex justifyContent="space-between">
-        <Tabs>
-          {tabs.map((tab) => (
-            <Tab key={tab.id}>{tab.title}</Tab>
-          ))}
-        </Tabs>
-      </Flex>
+    <Tabs.Root
+      label="todo"
+      id="tabs"
+      variant="simple"
+      style={{ marginTop: -24 }}
+      ref={tabGroupRef}
+      defaultValue={tabs[0].id}
+    >
+      <Tabs.List>
+        {tabs.map((tab) => (
+          <Tabs.Trigger key={tab.id} value={tab.id}>{tab.title}</Tabs.Trigger>
+        ))}
+      </Tabs.List>
 
       <Divider />
 
       <Box paddingTop={6}>
-        <TabPanels>
-          {tabs.map((tab) => (
-            <TabPanel key={tab.id}>{tab.content}</TabPanel>
-          ))}
-        </TabPanels>
+        {tabs.map((tab) => (
+          <Tabs.Content key={tab.id} value={tab.id}>{tab.content}</Tabs.Content>
+        ))}
       </Box>
-    </TabGroup>
+    </Tabs.Root>
   )
 }

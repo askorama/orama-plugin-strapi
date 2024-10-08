@@ -16,7 +16,7 @@ import {
   Typography,
   VisuallyHidden
 } from '@strapi/design-system'
-import { ExternalLink, Plus, Refresh } from '@strapi/icons'
+import { ExternalLink, Plus, Alien } from '@strapi/icons'
 import cronSettings from '../../utils/cronSettings'
 
 const status = {
@@ -151,7 +151,7 @@ const CollectionsTable = ({ collections, onEditAction, onDeployAction, onCreateA
                       onClick={() => onDeployAction(entry)}
                       size="S"
                       variant="success-light"
-                      startIcon={<Refresh />}
+                      startIcon={<Alien />}
                       loading={entry.status === 'updating'}
                     >
                       Deploy

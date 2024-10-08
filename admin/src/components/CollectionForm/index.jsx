@@ -3,7 +3,6 @@ import {
   Divider,
   Flex,
   Radio,
-  RadioGroup,
   SingleSelect,
   SingleSelectOption,
   TextInput,
@@ -61,7 +60,7 @@ const CollectionForm = ({
                 />
               </Box>
               <Flex alignItems="flex-start" justifyContent="space-between" style={{ width: '100%' }}>
-                <Flex flexShrink={1} style={{ width: '49%' }}>
+                <Flex style={{ width: '49%' }}>
                   <SingleSelect
                     required
                     onChange={(value) => onFieldChange({ name: 'entity', value })}
@@ -114,23 +113,22 @@ const CollectionForm = ({
                     Update Hook
                   </Typography>
                 </Box>
-                <RadioGroup
-                  labelledBy="updateHook"
+                <Radio.Group
                   name="updateHook"
                   id="updateHook"
                   size="L"
                   onChange={(e) => onFieldChange({ name: 'updateHook', value: e.target.value })}
                   value={collection?.updateHook || 'live'}
                 >
-                  <div style={{ marginBottom: '8px' }}>
-                    <Radio value="live">Live update</Radio>
-                  </div>
-                  <div>
-                    <Radio value="cron">Scheduled job</Radio>
-                  </div>
-                </RadioGroup>
+                  <Radio.Item value="live">
+                    Live update
+                  </Radio.Item>
+                  <Radio.Item value="cron">
+                    Scheduled job
+                  </Radio.Item>
+                </Radio.Group>
               </Box>
-              <Box width="100%">
+              {/*<Box width="100%">
                 <Box>
                   <Box marginBottom={1}>
                     <Typography variant="pi" fontWeight="bold">
@@ -157,7 +155,7 @@ const CollectionForm = ({
                     ))}
                   </SingleSelect>
                 </Box>
-              </Box>
+              </Box>*/}
             </Flex>
           )
         }

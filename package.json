@@ -2,12 +2,24 @@
   "name": "@oramacloud/plugin-strapi",
   "version": "2.0.0-rc.1",
   "description": "A Strapi plugin to integrate Orama Cloud's search and answers engine, providing seamless search capabilities within your Strapi application.",
-  "strapi": {
-    "name": "orama-cloud",
-    "description": "A Strapi plugin to integrate Orama Cloud's search and answers engine, providing seamless search capabilities within your Strapi application.",
-    "kind": "plugin",
-    "displayName": "Orama Cloud"
+  "keywords": [
+    "strapi",
+    "plugin",
+    "search",
+    "answers",
+    "orama",
+    "cloud"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Orama"
   },
+  "type": "commonjs",
+  "maintainers": [
+    {
+      "name": "Orama"
+    }
+  ],
   "exports": {
     "./package.json": "./package.json",
     "./strapi-admin": {
@@ -27,10 +39,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "strapi-plugin build",
+    "build": "rm -rf dist && strapi-plugin build",
     "verify": "strapi-plugin verify",
-    "watch": "strapi-plugin watch",
-    "watch:link": "strapi-plugin watch:link",
+    "watch": "rm -rf dist && strapi-plugin watch",
+    "watch:link": "rm -rf dist && strapi-plugin watch:link",
     "test": "jest --collect-coverage",
     "format": "biome format --write ."
   },
@@ -38,8 +50,7 @@
     "@oramacloud/client": "^1.3.16",
     "@strapi/design-system": "^2.0.0-rc.11",
     "@strapi/icons": "^2.0.0-rc.11",
-    "react-intl": "^6.7.0",
-    "prop-types": "^15.7.2"
+    "react-intl": "^6.7.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.1",
@@ -47,22 +58,16 @@
   },
   "peerDependencies": {
     "@strapi/sdk-plugin": "^5.2.6",
-    "@strapi/strapi": "^5.0.1",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "styled-components": "^6.0.0"
+    "@strapi/strapi": "^5.0.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "styled-components": "^6.1.13"
   },
-  "author": {
-    "name": "Orama"
-  },
-  "maintainers": [
-    {
-      "name": "Orama"
-    }
-  ],
-  "engines": {
-    "node": ">=18.0.0 <=20.x.x",
-    "npm": ">=6.0.0"
-  },
-  "license": "MIT"
+  "strapi": {
+    "name": "orama-cloud",
+    "description": "A Strapi plugin to integrate Orama Cloud's search and answers engine, providing seamless search capabilities within your Strapi application.",
+    "kind": "plugin",
+    "displayName": "Orama Cloud"
+  }
 }
