@@ -21,12 +21,3 @@ node_modules
 ############################
 
 coverage
-
-############################
-# Package Manager
-############################
-
-pnpm-lock.yaml
-yarn.lock
-npm-debug.log
-package-lock.json
