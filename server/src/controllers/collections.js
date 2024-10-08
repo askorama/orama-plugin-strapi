@@ -3,6 +3,7 @@
 module.exports = ({ strapi }) => {
   return {
     async find(ctx) {
+      console.log("===DEBUG===", await strapi.plugin('orama-cloud'))
       const collections = await strapi.plugin('orama-cloud').service('collectionsService').find()
       ctx.send(collections)
     },

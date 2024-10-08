@@ -6,17 +6,14 @@ import {
   HeaderLayout,
   LinkButton,
   Loader,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  ModalLayout,
+  Modal,
   Layout,
   ContentLayout,
   Typography,
   Status
 } from '@strapi/design-system'
 import { ExternalLink, Plus } from '@strapi/icons'
-import { useFetchClient, useNotification } from '@strapi/helper-plugin'
+import { useFetchClient, useNotification } from '@strapi/strapi/admin'
 import CollectionsTable from '../../components/CollectionsTable'
 import pluginId from '../../pluginId'
 import CollectionForm from '../../components/CollectionForm'
@@ -56,7 +53,7 @@ const HomePage = () => {
   const [currentCollection, setCurrentCollection] = useState(null)
   const [formEditMode, setFormEditMode] = useState(false)
   const { get, post, put, del } = useFetchClient()
-  const toggleNotification = useNotification()
+  const { toggleNotification } = useNotification()
 
   const fetchData = () => {
     get(`/${pluginId}/collections`)
@@ -66,7 +63,7 @@ const HomePage = () => {
         console.error('Failed to load collections.', err)
         toggleNotification({
           type: 'warning',
-          message: 'Failed to load collections.'
+          defaultdefaultMessage: 'Failed to load collections.'
         })
       })
 
@@ -77,7 +74,7 @@ const HomePage = () => {
         console.error('Failed to load collections.', err)
         toggleNotification({
           type: 'warning',
-          message: 'Failed to load content types.'
+          defaultdefaultMessage: 'Failed to load content types.'
         })
       })
   }
@@ -145,7 +142,7 @@ const HomePage = () => {
   const onValidateError = (error) => {
     toggleNotification({
       type: 'warning',
-      message: error
+      defaultMessage: error
     })
   }
 
@@ -160,7 +157,7 @@ const HomePage = () => {
       const newCollection = await post(`/${pluginId}/collections`, currentCollection)
       toggleNotification({
         type: 'success',
-        message: 'Collection created successfully.'
+        defaultMessage: 'Collection created successfully.'
       })
       setCollections((prevCollections) => [...prevCollections, newCollection.data])
       setIsModalVisible(false)
@@ -168,7 +165,7 @@ const HomePage = () => {
       console.error(err)
       toggleNotification({
         type: 'warning',
-        message: 'Failed to create collection.'
+        defaultMessage: 'Failed to create collection.'
       })
     } finally {
       setIsSaving(false)
@@ -186,7 +183,7 @@ const HomePage = () => {
       const collection = await put(`/${pluginId}/collections/${currentCollection.id}`, currentCollection)
       toggleNotification({
         type: 'success',
-        message: 'Collection updated successfully.'
+        defaultMessage: 'Collection updated successfully.'
       })
       setCollections((prevCollections) =>
         prevCollections.map((col) => (col.id === collection.data?.id ? collection.data : col))
@@ -196,7 +193,7 @@ const HomePage = () => {
       console.error(err)
       toggleNotification({
         type: 'warning',
-        message: 'Failed to update collection.'
+        defaultMessage: 'Failed to update collection.'
       })
     } finally {
       setIsSaving(false)
@@ -209,14 +206,14 @@ const HomePage = () => {
       await del(`/${pluginId}/collections/${currentCollection.id}`)
       toggleNotification({
         type: 'success',
-        message: 'Collection deleted successfully.'
+        defaultMessage: 'Collection deleted successfully.'
       })
       setCollections((prevCollections) => prevCollections.filter((col) => col.id !== currentCollection.id))
     } catch (err) {
       console.error(err)
       toggleNotification({
         type: 'warning',
-        message: 'Failed to delete collection.'
+        defaultMessage: 'Failed to delete collection.'
       })
     }
   }
@@ -227,13 +224,13 @@ const HomePage = () => {
       await post(`/${pluginId}/collections/${currentCollection.id}/deploy`)
       toggleNotification({
         type: 'success',
-        message: 'Collection deployment started.'
+        defaultMessage: 'Collection deployment started.'
       })
     } catch (err) {
       console.error(err)
       toggleNotification({
         type: 'warning',
-        message: 'Failed to deploy collection.'
+        defaultMessage: 'Failed to deploy collection.'
       })
     }
   }
@@ -280,7 +277,7 @@ const HomePage = () => {
                 onDeployAction={handleDeployClick}
                 onCreateAction={handleCreateClick}
               />
-              {isModalVisible && (
+              {/*{isModalVisible && (
                 <ModalLayout
                   style={{ maxWidth: '700px' }}
                   onClose={() => {
@@ -396,7 +393,7 @@ const HomePage = () => {
                     }
                   />
                 </ModalLayout>
-              )}
+              )}*/}
             </>
           )}
         </Box>

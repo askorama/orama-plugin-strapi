@@ -6,18 +6,18 @@
  */
 
 import React from 'react'
-import { Switch, Route } from 'react-router-dom'
-import { AnErrorOccurred } from '@strapi/helper-plugin'
+import { Routes, Route } from 'react-router-dom'
+import { Page } from '@strapi/strapi/admin'
 import pluginId from '../../pluginId'
 import PluginSettings from '../PluginSettings'
 
 const App = () => {
   return (
     <div>
-      <Switch>
+      <Routes>
         <Route path={`/plugins/${pluginId}`} component={PluginSettings} exact />
-        <Route component={AnErrorOccurred} />
-      </Switch>
+        <Route component={Page.Error} />
+      </Routes>
     </div>
   )
 }

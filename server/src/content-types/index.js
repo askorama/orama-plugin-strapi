@@ -1,6 +1,6 @@
 'use strict'
 
-const collection = require('./collection')
+import collection from './collection'
 
 module.exports = {
   collection

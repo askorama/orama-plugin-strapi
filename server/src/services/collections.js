@@ -1,6 +1,6 @@
 'use strict'
 
-const ENTITY_NAME = 'plugin::orama-cloud.collection'
+const DOCUMENT_NAME = 'plugin::orama-cloud.collection'
 
 module.exports = ({ strapi }) => {
   return {
@@ -8,7 +8,7 @@ module.exports = ({ strapi }) => {
      * Find all collection records
      */
     async find() {
-      return strapi.entityService.findMany(ENTITY_NAME)
+      return strapi.documents(DOCUMENT_NAME).findMany()
     },
 
     /**
@@ -16,7 +16,7 @@ module.exports = ({ strapi }) => {
      * @param {string} id
      */
     async findOne(id) {
-      return strapi.entityService.findOne(ENTITY_NAME, id)
+      return strapi.documents(DOCUMENT_NAME).findOne({ documentId: id })
     },
 
     /**
@@ -24,16 +24,16 @@ module.exports = ({ strapi }) => {
      * @param {object} data
      */
     async create(data) {
-      const entity = await strapi.entityService.create(ENTITY_NAME, {
+      const document = await strapi.documents(DOCUMENT_NAME).create({
         data: {
           ...data,
           status: 'outdated'
         }
       })
 
-      strapi.plugin('orama-cloud').service('oramaManagerService').afterCollectionCreationOrUpdate({ id: entity.id })
+      strapi.plugin('orama-cloud').service('oramaManagerService').afterCollectionCreationOrUpdate({ id: document.id })
 
-      return entity
+      return document
     },
 
     /**
@@ -42,14 +42,15 @@ module.exports = ({ strapi }) => {
      * @param {object} data
      */
     async update(id, data) {
-      const entity = await strapi.entityService.update(ENTITY_NAME, id, {
+      const document = await strapi.documents(DOCUMENT_NAME).update({
+        documentId: id,
         data: {
           ...data,
           status: 'outdated'
         }
       })
 
-      strapi.plugin('orama-cloud').service('oramaManagerService').afterCollectionCreationOrUpdate({ id: entity.id })
+      strapi.plugin('orama-cloud').service('oramaManagerService').afterCollectionCreationOrUpdate({ id: document.id })
 
       return entity
     },
@@ -64,7 +65,7 @@ module.exports = ({ strapi }) => {
     async updateWithoutHooks(id, data) {
       await strapi.db.connection('orama-cloud_collections').where({ id }).update(data)
 
-      return await strapi.entityService.findOne('plugin::orama-cloud.collection', id)
+      return await this.findOne(id)
     },
 
     /**
@@ -72,7 +73,7 @@ module.exports = ({ strapi }) => {
      * @param {string} id
      */
     async delete(id) {
-      return strapi.entityService.delete(ENTITY_NAME, id)
+      return strapi.documents(DOCUMENT_NAME).delete({ documentId: id })
     },
 
     /**
