@@ -1,6 +1,7 @@
 import {
   Box,
   Divider,
+  Field,
   Flex,
   Radio,
   SingleSelect,
@@ -47,37 +48,51 @@ const CollectionForm = ({
           content: (
             <Flex direction="column" alignItems="flex-start" gap={6}>
               <Box width="100%">
-                <TextInput
-                  required
-                  onChange={(e) => onFieldChange({ name: 'indexId', value: e.target.value })}
-                  label="Index ID"
-                  placeholder="Orama Cloud Index ID"
-                  name="indexId"
-                  id="indexId"
-                  hint="Your Orama Cloud Index ID. Go to Orama Dashboard > Indexes to find it."
-                  style={{ width: '100%' }}
-                  value={collection?.indexId}
-                />
+                <Field.Root
+                  id="with_field"
+                >
+                  <Field.Label>Index ID</Field.Label>
+                  <TextInput
+                    required
+                    onChange={(e) => onFieldChange({ name: 'indexId', value: e.target.value })}
+                    label="Index ID"
+                    placeholder="Orama Cloud Index ID"
+                    name="indexId"
+                    id="indexId"
+                    hint="Your Orama Cloud Index ID. Go to Orama Dashboard > Indexes to find it."
+                    style={{ width: '100%' }}
+                    value={collection?.indexId}
+                  />
+                  <Field.Error />
+                  <Field.Hint />
+                </Field.Root>
               </Box>
               <Flex alignItems="flex-start" justifyContent="space-between" style={{ width: '100%' }}>
                 <Flex style={{ width: '49%' }}>
-                  <SingleSelect
-                    required
-                    onChange={(value) => onFieldChange({ name: 'entity', value })}
-                    label="Content Type"
-                    placeholder="Content Type"
-                    name="entity"
-                    id="entity"
-                    hint="Choose the Content Type you want to map with your index on Orama Cloud."
-                    value={collection?.entity}
+                  <Field.Root
+                    id="with_field"
                   >
-                    {contentTypeOptions?.length > 0 &&
-                      contentTypeOptions.map((ct, i) => (
-                        <SingleSelectOption key={i} value={ct.value}>
-                          {ct.label}
-                        </SingleSelectOption>
-                      ))}
-                  </SingleSelect>
+                    <Field.Label>Content Type</Field.Label>
+                    <SingleSelect
+                      required
+                      onChange={(value) => onFieldChange({ name: 'entity', value })}
+                      label="Content Type"
+                      placeholder="Content Type"
+                      name="entity"
+                      id="entity"
+                      hint="Choose the Content Type you want to map with your index on Orama Cloud."
+                      value={collection?.entity}
+                    >
+                      {contentTypeOptions?.length > 0 &&
+                        contentTypeOptions.map((ct, i) => (
+                          <SingleSelectOption key={i} value={ct.value}>
+                            {ct.label}
+                          </SingleSelectOption>
+                        ))}
+                    </SingleSelect>
+                    <Field.Error />
+                    <Field.Hint />
+                  </Field.Root>
                 </Flex>
                 <Flex direction="column" alignItems="flex-start" style={{ width: '49%' }}>
                   <RelationsSelect

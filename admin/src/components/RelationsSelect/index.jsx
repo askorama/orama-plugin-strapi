@@ -1,12 +1,12 @@
-import React from 'react'
-import { Box, Flex, MultiSelect, MultiSelectOption, Typography } from '@strapi/design-system'
+import React from "react"
+import { Box, Field, MultiSelect, MultiSelectOption } from "@strapi/design-system"
 
 const RelationsSelect = ({ onChange, collectionRelations, relations = [] }) => (
-  <>
-    <Typography variant="pi" fontWeight="bold">
-      Include relations
-    </Typography>
-    <Box style={{ marginTop: 4, width: '100%' }}>
+  <Box style={{ width: "100%" }}>
+    <Field.Root
+      id="with_field"
+    >
+      <Field.Label>Index ID</Field.Label>
       <MultiSelect
         placeholder="Select relations.."
         disabled={relations.length === 0}
@@ -19,8 +19,10 @@ const RelationsSelect = ({ onChange, collectionRelations, relations = [] }) => (
           </MultiSelectOption>
         ))}
       </MultiSelect>
-    </Box>
-  </>
+      <Field.Error />
+      <Field.Hint />
+    </Field.Root>
+  </Box>
 )
 
 export default RelationsSelect

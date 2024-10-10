@@ -20,6 +20,30 @@ import { PLUGIN_ID } from "../pluginId"
 import CollectionsTable from "../components/CollectionsTable"
 import CollectionForm from "../components/CollectionForm"
 
+const isValidCollection = (collection) => {
+  if (!collection.schema || Object.keys(collection.schema).length === 0) {
+    return {
+      error: 'Select at least one attribute'
+    }
+  }
+
+  if (!collection.searchableAttributes || collection.searchableAttributes.length === 0) {
+    return {
+      error: 'Select at least one searchable attribute'
+    }
+  }
+
+  if (collection.indexId?.length === 0) {
+    return {
+      error: 'Index ID is required'
+    }
+  }
+
+  return {
+    error: false
+  }
+}
+
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
