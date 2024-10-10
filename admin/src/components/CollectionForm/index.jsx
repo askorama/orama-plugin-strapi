@@ -132,7 +132,7 @@ const CollectionForm = ({
                   name="updateHook"
                   id="updateHook"
                   size="L"
-                  onChange={(e) => onFieldChange({ name: 'updateHook', value: e.target.value })}
+                  onValueChange={(value) => onFieldChange({ name: 'updateHook', value })}
                   value={collection?.updateHook || 'live'}
                 >
                   <Radio.Item value="live">
@@ -143,7 +143,7 @@ const CollectionForm = ({
                   </Radio.Item>
                 </Radio.Group>
               </Box>
-              {/*<Box width="100%">
+              <Box width="100%">
                 <Box>
                   <Box marginBottom={1}>
                     <Typography variant="pi" fontWeight="bold">
@@ -153,24 +153,26 @@ const CollectionForm = ({
                   <Typography variant="omega">{nextRun}</Typography>
                 </Box>
                 <Box paddingTop={4} style={{ opacity: cronUpdates ? 1 : 0 }}>
-                  <SingleSelect
-                    required
-                    onChange={(value) => onFieldChange({ name: 'updateCron', value })}
-                    label="Deploy Frequency"
-                    placeholder="Set deploy frequency"
-                    name="updateCron"
-                    id="updateCron"
-                    hint="Set the frequency to update your index."
-                    value={collection?.updateCron || '0 * * * *'}
-                  >
-                    {cronSettings.map((option, i) => (
-                      <SingleSelectOption key={i} value={option.value}>
-                        {option.label}
-                      </SingleSelectOption>
-                    ))}
-                  </SingleSelect>
+                  <Field.Root name="update-settings">
+                    <Field.Label>Deploy Frequency</Field.Label>
+                    <SingleSelect
+                      required
+                      onChange={(value) => onFieldChange({ name: 'updateCron', value })}
+                      name="updateCron"
+                      id="updateCron"
+                      hint="Set the frequency to update your index."
+                      value={collection?.updateCron || '0 * * * *'}
+                      defaultValue={collection?.updateCron || '0 * * * *'}
+                    >
+                      {cronSettings.map((option, i) => (
+                        <SingleSelectOption key={i} value={option.value}>
+                          {option.label}
+                        </SingleSelectOption>
+                      ))}
+                    </SingleSelect>
+                  </Field.Root>
                 </Box>
-              </Box>*/}
+              </Box>
             </Flex>
           )
         }

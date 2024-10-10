@@ -310,23 +310,36 @@ const HomePage = () => {
                     <Modal.Footer>
                       {
                         formEditMode ? (
-                          <>
-                            <LinkButton
-                              href={`https://cloud.orama.com/indexes/view/${currentCollection.indexId}`}
-                              isExternal
-                              endIcon={<ExternalLink width={10} />}
-                              variant="tertiary"
-                              style={{
-                                whiteSpace: "nowrap",
-                                textDecoration: "none"
-                              }}
-                            >
-                              View index
-                            </LinkButton>
-                            <Button onClick={handleUpdate} loading={isSaving}>
-                              Update
-                            </Button>
-                          </>
+                          <Flex justifyContent="space-between" grow={1}>
+                            <Flex>
+                              {formEditMode ? (
+                                <Button onClick={handleDelete} variant="danger-light">
+                                  Delete collection
+                                </Button>
+                              ) : (
+                                <Button onClick={() => setIsModalVisible(false)} variant="tertiary">
+                                  Cancel
+                                </Button>
+                              )}
+                            </Flex>
+                            <Flex gap={4}>
+                              <LinkButton
+                                href={`https://cloud.orama.com/indexes/view/${currentCollection.indexId}`}
+                                isExternal
+                                endIcon={<ExternalLink width={10} />}
+                                variant="tertiary"
+                                style={{
+                                  whiteSpace: "nowrap",
+                                  textDecoration: "none"
+                                }}
+                              >
+                                View index
+                              </LinkButton>
+                              <Button onClick={handleUpdate} loading={isSaving}>
+                                Update
+                              </Button>
+                            </Flex>
+                          </Flex>
                         ) : (
                           <Button onClick={handleCreate} loading={isSaving}>
                             Create
@@ -364,32 +377,30 @@ const HomePage = () => {
                         </Typography>
                       </Box>
                     </Modal.Body>
-                    <Modal.Footer
-                      startActions={
+                    <Modal.Footer>
+                      <Flex justifyContent="space-between">
                         <Button onClick={() => setShowConfirmationModal(false)} variant="tertiary">
                           Cancel
                         </Button>
-                      }
-                      endActions={
-                        <Flex gap={2}>
-                          <LinkButton
-                            href={`https://cloud.orama.com/indexes/view/${currentCollection.indexId}`}
-                            isExternal
-                            endIcon={<ExternalLink width={10} />}
-                            variant="tertiary"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textDecoration: "none"
-                            }}
-                          >
-                            View index
-                          </LinkButton>
-                          <Button onClick={handleDeploy} variant="primary">
-                            Deploy now
-                          </Button>
-                        </Flex>
-                      }
-                    />
+                      </Flex>
+                      <Flex gap={2}>
+                        <LinkButton
+                          href={`https://cloud.orama.com/indexes/view/${currentCollection.indexId}`}
+                          isExternal
+                          endIcon={<ExternalLink width={10} />}
+                          variant="tertiary"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textDecoration: "none"
+                          }}
+                        >
+                          View index
+                        </LinkButton>
+                        <Button onClick={handleDeploy} variant="primary">
+                          Deploy now
+                        </Button>
+                      </Flex>
+                    </Modal.Footer>
                   </Modal.Content>
                 </Modal.Root>
               )}

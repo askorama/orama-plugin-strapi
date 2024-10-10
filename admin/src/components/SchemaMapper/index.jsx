@@ -95,7 +95,7 @@ const SchemaMapper = ({ collection, contentTypeSchema, onSchemaChange }) => {
                 <Checkbox
                   aria-label="Select all entries"
                   checked={selectedAttributes.length === schemaAttributes.length}
-                  onChange={() => selectAllAttributes()}
+                  onClick={() => selectAllAttributes()}
                 />
               </Th>
               <Th style={{ minWidth: '300px' }}>
@@ -118,7 +118,7 @@ const SchemaMapper = ({ collection, contentTypeSchema, onSchemaChange }) => {
             {schemaAttributes.map((field) => (
               <Tr key={field}>
                 <Td>
-                  <Checkbox checked={isChecked(field)} onChange={() => handleCheck(field)} />
+                  <Checkbox checked={isChecked(field)} onClick={() => handleCheck(field)} />
                 </Td>
                 <Td onClick={() => handleCheck(field)} style={{ cursor: 'pointer' }}>
                   <Typography textColor="neutral800">{field}</Typography>
