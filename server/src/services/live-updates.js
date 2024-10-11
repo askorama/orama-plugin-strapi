@@ -10,7 +10,7 @@ module.exports = ({ strapi }) => {
 
   return {
     registerLifecycleHooks(collection) {
-      const { id, entity } = collection
+      const { id } = collection
 
       // Remove any existing cron job for the collection
       cronService.removeCronJob(id)
@@ -32,7 +32,7 @@ module.exports = ({ strapi }) => {
       })
 
       async function handleLiveUpdates(event, action) {
-        const { model, result } = event
+        const { result } = event
         await collectionService.updateWithoutHooks(collection.id, {
           status: 'outdated'
         })

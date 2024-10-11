@@ -11,13 +11,11 @@ import {
   Td,
   Th,
   Thead,
-  Tooltip,
   Tr,
   Typography,
   VisuallyHidden
 } from '@strapi/design-system'
-import { ExternalLink, Plus, Alien } from '@strapi/icons'
-import cronSettings from '../../utils/cronSettings'
+import { ExternalLink, Plus, ArrowClockwise } from '@strapi/icons'
 
 const status = {
   updated: {
@@ -152,7 +150,7 @@ const CollectionsTable = ({ collections, onEditAction, onDeployAction, onCreateA
                         onClick={() => onDeployAction(entry)}
                         size="S"
                         variant="success-light"
-                        startIcon={<Alien />}
+                        startIcon={<ArrowClockwise />}
                         loading={entry.status === 'updating'}
                       >
                         Deploy
