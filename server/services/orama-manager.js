@@ -1,15 +1,15 @@
-'use strict'
+"use strict"
 
-const { CloudManager } = require('@oramacloud/client')
-const { getSchemaFromAttributes } = require('../../utils/schema')
+const { CloudManager } = require("@oramacloud/client")
+const { getSchemaFromEntryStructure, filterSearchableAttributesEntry } = require("../../utils/schema")
 
 class OramaManager {
   constructor({ strapi }) {
     this.strapi = strapi
-    this.contentTypesService = strapi.plugin('orama-cloud').service('contentTypesService')
-    this.collectionService = strapi.plugin('orama-cloud').service('collectionsService')
-    this.privateApiKey = strapi.config.get('plugin.orama-cloud.privateApiKey')
-    this.documentsTransformer = strapi.config.get('plugin.orama-cloud.documentsTransformer')
+    this.contentTypesService = strapi.plugin("orama-cloud").service("contentTypesService")
+    this.collectionService = strapi.plugin("orama-cloud").service("collectionsService")
+    this.privateApiKey = strapi.config.get("plugin.orama-cloud.privateApiKey")
+    this.documentsTransformer = strapi.config.get("plugin.orama-cloud.documentsTransformer")
 
     this.oramaCloudManager = new CloudManager({ api_key: this.privateApiKey })
     this.DocumentActionsMap = {
@@ -26,18 +26,18 @@ class OramaManager {
     }
 
     if (!this.privateApiKey) {
-      this.strapi.log.error('Private API key is required to process index updates')
+      this.strapi.log.error("Private API key is required to process index updates")
       return false
     }
 
-    if (collection.status === 'updating') {
+    if (collection.status === "updating") {
       this.strapi.log.debug(
         `SKIP: Collection ${collection.entity} with indexId ${collection.indexId} is already updating`
       )
       return false
     }
 
-    if (collection.status === 'updated') {
+    if (collection.status === "updated") {
       this.strapi.log.debug(
         `SKIP: Collection ${collection.entity} with indexId ${collection.indexId} is already updated`
       )
@@ -49,19 +49,19 @@ class OramaManager {
 
   async setOutdated(collection) {
     return await this.collectionService.updateWithoutHooks(collection.id, {
-      status: 'outdated'
+      status: "outdated"
     })
   }
 
   async updatingStarted(collection) {
     return await this.collectionService.updateWithoutHooks(collection.id, {
-      status: 'updating'
+      status: "updating"
     })
   }
 
   async updatingCompleted(collection, documents_count) {
     return await this.collectionService.updateWithoutHooks(collection.id, {
-      status: 'updated',
+      status: "updated",
       deployed_at: new Date(),
       ...(documents_count && { documents_count })
     })
@@ -90,6 +90,15 @@ class OramaManager {
     })
 
     if (entries.length > 0) {
+      if (offset === 0) {
+        const exampleEntry = filterSearchableAttributesEntry(collection.searchableAttributes, entries[0])
+
+        await this.oramaUpdateSchema({
+          indexId: collection.indexId,
+          schema: getSchemaFromEntryStructure(exampleEntry)
+        })
+      }
+
       await this.oramaInsert({
         indexId: collection.indexId,
         entries
@@ -164,19 +173,9 @@ class OramaManager {
       return
     }
 
-    const oramaSchema = getSchemaFromAttributes({
-      attributes: collection.searchableAttributes,
-      schema: collection.schema
-    })
-
     await this.updatingStarted(collection)
 
     await this.resetIndex(collection)
-
-    await this.oramaUpdateSchema({
-      indexId: collection.indexId,
-      schema: oramaSchema
-    })
 
     const { documents_count } = await this.bulkInsert(collection)
 
