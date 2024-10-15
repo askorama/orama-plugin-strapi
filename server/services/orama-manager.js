@@ -9,6 +9,7 @@ class OramaManager {
     this.contentTypesService = strapi.plugin('orama-cloud').service('contentTypesService')
     this.collectionService = strapi.plugin('orama-cloud').service('collectionsService')
     this.privateApiKey = strapi.config.get('plugin.orama-cloud.privateApiKey')
+    this.documentsTransformer = strapi.config.get('plugin.orama-cloud.documentsTransformer')
 
     this.oramaCloudManager = new CloudManager({ api_key: this.privateApiKey })
     this.DocumentActionsMap = {
@@ -107,18 +108,20 @@ class OramaManager {
 
   async oramaInsert({ indexId, entries }) {
     const index = this.oramaCloudManager.index(indexId)
-    const result = await index.insert(entries)
+    const formattedData = this.documentsTransformer?.(entries) || entries
+    const result = await index.insert(formattedData)
 
-    this.strapi.log.info(`INSERT: documents with id ${entries.map(({ id }) => id)} into index ${indexId}`)
+    this.strapi.log.info(`INSERT: documents with id ${formattedData.map(({ id }) => id)} into index ${indexId}`)
 
     return result
   }
 
   async oramaUpdate({ indexId, entries }) {
     const index = this.oramaCloudManager.index(indexId)
-    const result = await index.update(entries)
+    const formattedData = this.documentsTransformer?.(entries) || entries
+    const result = await index.update(formattedData)
 
-    this.strapi.log.info(`UPDATE: document with id ${entries.map(({ id }) => id)} into index ${indexId}`)
+    this.strapi.log.info(`UPDATE: document with id ${formattedData.map(({ id }) => id)} into index ${indexId}`)
 
     return result
   }
