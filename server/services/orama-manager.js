@@ -109,6 +109,12 @@ class OramaManager {
   async oramaInsert({ indexId, entries }) {
     const index = this.oramaCloudManager.index(indexId)
     const formattedData = this.documentsTransformer?.(entries) || entries
+
+    if (!formattedData) {
+      this.strapi.log.error(`ERROR: documentsTransformer needs a return value`)
+      return false
+    }
+
     const result = await index.insert(formattedData)
 
     this.strapi.log.info(`INSERT: documents with id ${formattedData.map(({ id }) => id)} into index ${indexId}`)
@@ -119,6 +125,12 @@ class OramaManager {
   async oramaUpdate({ indexId, entries }) {
     const index = this.oramaCloudManager.index(indexId)
     const formattedData = this.documentsTransformer?.(entries) || entries
+
+    if (!formattedData) {
+      this.strapi.log.error(`ERROR: documentsTransformer needs a return value`)
+      return false
+    }
+
     const result = await index.update(formattedData)
 
     this.strapi.log.info(`UPDATE: document with id ${formattedData.map(({ id }) => id)} into index ${indexId}`)
