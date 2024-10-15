@@ -9,7 +9,7 @@ const strapi = {
   plugin: jest.fn().mockReturnThis(),
   service: jest.fn().mockReturnThis(),
   config: {
-    get: jest.fn(string => {
+    get: jest.fn((string) => {
       if (string === 'plugin.orama-cloud.privateApiKey') return 'mockPrivateApiKey'
       if (string === 'plugin.orama-cloud.documentsTransformer') return null
     })
@@ -66,7 +66,7 @@ describe('OramaManager', () => {
 
   describe('validate', () => {
     afterEach(() => {
-      strapi.config.get = jest.fn(string => {
+      strapi.config.get = jest.fn((string) => {
         if (string === 'plugin.orama-cloud.privateApiKey') return 'mockPrivateApiKey'
         if (string === 'plugin.orama-cloud.documentsTransformer') return null
       })
@@ -80,7 +80,7 @@ describe('OramaManager', () => {
     })
 
     it('should return false if privateApiKey is not found', () => {
-      strapi.config.get = jest.fn(string => {
+      strapi.config.get = jest.fn((string) => {
         if (string === 'plugin.orama-cloud.privateApiKey') return null
         if (string === 'plugin.orama-cloud.documentsTransformer') return null
       })
@@ -207,7 +207,7 @@ describe('OramaManager', () => {
       expect(mockedDocumentTransformer).not.toHaveBeenCalledWith([{ id: 1, title: 'Test Entry' }])
     })
 
-    it("should call documentsFormatter fn if declared in plugin config", async () => {
+    it('should call documentsFormatter fn if declared in plugin config', async () => {
       const { insert } = new CloudManager({ strapi }).index()
 
       await oramaManager.oramaInsert({
@@ -220,7 +220,7 @@ describe('OramaManager', () => {
     })
 
     afterEach(() => {
-      strapi.config.get = jest.fn(string => {
+      strapi.config.get = jest.fn((string) => {
         if (string === 'plugin.orama-cloud.privateApiKey') return 'mockPrivateApiKey'
         if (string === 'plugin.orama-cloud.documentsTransformer') return mockedDocumentTransformer
       })
