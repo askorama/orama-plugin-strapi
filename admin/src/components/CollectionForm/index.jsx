@@ -75,7 +75,7 @@ const CollectionForm = ({
                     <Field.Label>Content Type</Field.Label>
                     <SingleSelect
                       required
-                      onChange={(value) => onFieldChange({ name: 'entity', value })}
+                      onValueChange={(value) => onFieldChange({ name: 'entity', value })}
                       label="Content Type"
                       placeholder="Content Type"
                       name="entity"

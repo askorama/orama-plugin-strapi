@@ -190,9 +190,7 @@ class OramaManager {
     this.strapi.log.debug(`UPDATE: ${collection.entity} with indexId ${collection.indexId} completed`)
   }
 
-  async processLiveUpdate({ documentId }, record, action) {
-    const collection = await this.collectionService.findOne(documentId)
-
+  async processLiveUpdate(collection, record, action) {
     if (!this.validate(collection)) {
       return
     }
@@ -202,7 +200,7 @@ class OramaManager {
     await this.updatingStarted(collection)
 
     const handleDocumentResult = await this.handleDocument({
-      indexId: collection.indexId,
+      indexId: collection.index_id,
       record,
       action
     })

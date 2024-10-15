@@ -47,7 +47,8 @@ module.exports = ({ strapi }) => {
         data: {
           ...data,
           status: "outdated"
-        }
+        },
+        lookup: "*"
       })
 
       strapi.plugin("orama-cloud").service("oramaManagerService").afterCollectionCreationOrUpdate({ documentId: document.documentId })
@@ -60,13 +61,12 @@ module.exports = ({ strapi }) => {
      * without triggering lifecycle hooks.
      *
      * @param {string} id
-     * @param {string} documentId
      * @param {object} data
      */
-    async updateWithoutHooks(id, data, documentId) {
-      await strapi.db.connection("orama-cloud_collections").where({ id }).update(data)
-
-      return await this.findOne(documentId)
+    async updateWithoutHooks(id, data) {
+      return await strapi.db.transaction(async ({ trx }) => {
+        return await trx.from("orama-cloud_collections").where({ id }).update(data, '*')
+      })
     },
 
     /**

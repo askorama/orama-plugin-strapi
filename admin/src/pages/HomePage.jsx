@@ -89,7 +89,7 @@ const HomePage = () => {
   }, [get])
 
   useEffect(() => {
-    if (currentCollection && !currentContentType) {
+    if (currentCollection) {
       const contentType = contentTypes.find((ct) => ct.value === currentCollection.entity)
       setCurrentContentType(contentType)
     }
