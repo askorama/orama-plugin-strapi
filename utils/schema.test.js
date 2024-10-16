@@ -1,8 +1,4 @@
-const {
-  getSchemaFromAttributes,
-  getSelectedAttributesFromSchema,
-  getSchemaFromEntryStructure
-} = require('./schema')
+const { getSchemaFromAttributes, getSelectedAttributesFromSchema, getSchemaFromEntryStructure } = require('./schema')
 
 describe('Schema Utils', () => {
   describe('getSchemaFromAttributes', () => {
