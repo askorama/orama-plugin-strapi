@@ -1,7 +1,7 @@
 'use strict'
 
 const { CloudManager } = require('@oramacloud/client')
-const { getSchemaFromEntryStructure, filterSearchableAttributesEntry } = require('../../utils/schema')
+const { getSchemaFromEntryStructure, filterSearchableAttributesEntry, getSchemaFromAttributes } = require('../../utils/schema')
 
 class OramaManager {
   constructor({ strapi }) {
@@ -91,7 +91,9 @@ class OramaManager {
 
     if (entries.length > 0) {
       if (offset === 0) {
-        const exampleEntry = filterSearchableAttributesEntry(collection.searchableAttributes, entries[0])
+        const firstEntry = entries[0]
+        const transformedEntry = this.documentsTransformer?.([firstEntry])[0] || firstEntry
+        const exampleEntry = getSchemaFromAttributes({ attributes: collection.searchableAttributes, schema: transformedEntry })
 
         await this.oramaUpdateSchema({
           indexId: collection.indexId,

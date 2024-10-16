@@ -41,18 +41,8 @@ const getSchemaFromEntryStructure = (entry) => {
   }, {})
 }
 
-const filterSearchableAttributesEntry = (searchableAttributes, entry) => {
-  return Object.keys(entry)
-    .filter((key) => searchableAttributes.includes(key))
-    .reduce((obj, key) => {
-      obj[key] = entry[key]
-      return obj
-    }, {})
-}
-
 module.exports = {
   getSchemaFromAttributes,
   getSelectedAttributesFromSchema,
-  getSchemaFromEntryStructure,
-  filterSearchableAttributesEntry
+  getSchemaFromEntryStructure
 }
