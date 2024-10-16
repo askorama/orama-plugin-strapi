@@ -3,7 +3,6 @@
 const { CloudManager } = require('@oramacloud/client')
 const {
   getSchemaFromEntryStructure,
-  filterSearchableAttributesEntry,
   getSchemaFromAttributes
 } = require('../../utils/schema')
 

@@ -1,8 +1,7 @@
 const {
   getSchemaFromAttributes,
   getSelectedAttributesFromSchema,
-  getSchemaFromEntryStructure,
-  filterSearchableAttributesEntry
+  getSchemaFromEntryStructure
 } = require('./schema')
 
 describe('Schema Utils', () => {
@@ -82,26 +81,6 @@ describe('Schema Utils', () => {
         watermelon: { seeds: { many: 'boolean' } },
         banana: 'string[]'
       })
-    })
-  })
-
-  describe('filterSearchableAttributesEntry', () => {
-    it('should return only the searchable attributes', () => {
-      const entry = {
-        potato: 'hello',
-        apple: 5,
-        watermelon: {
-          seeds: {
-            many: true
-          }
-        },
-        banana: ['yellow', 'green']
-      }
-      const searchable = ['potato', 'banana']
-
-      const result = filterSearchableAttributesEntry(searchable, entry)
-
-      expect(result).toEqual({ potato: 'hello', banana: ['yellow', 'green'] })
     })
   })
 })
