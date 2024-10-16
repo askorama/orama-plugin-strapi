@@ -15,7 +15,7 @@ const OramaTypesMap = {
   time: 'string',
   datetime: 'string',
   enumeration: 'enum',
-  array: 'array',
+  array: 'array'
 }
 
 const arrayRelations = ['oneToMany', 'manyToMany']
@@ -68,7 +68,10 @@ const getSelectedRelations = ({ schema, relations }) => {
 }
 
 const getSelectedFieldsConfigObj = (schema) =>
-  Object.entries(schema).reduce((acc, [key, value]) => (typeof value === 'object' || value === 'array' ? acc : [...acc, key]), ['id'])
+  Object.entries(schema).reduce(
+    (acc, [key, value]) => (typeof value === 'object' || value === 'array' ? acc : [...acc, key]),
+    ['id']
+  )
 
 module.exports = ({ strapi }) => {
   return {
