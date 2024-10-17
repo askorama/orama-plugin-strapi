@@ -1,7 +1,7 @@
 'use strict'
 
 const { CloudManager } = require('@oramacloud/client')
-const { getSchemaFromAttributes } = require('../../utils/schema')
+const { getSchemaFromEntryStructure, getSchemaFromAttributes } = require('../../utils/schema')
 
 class OramaManager {
   constructor({ strapi }) {
@@ -9,6 +9,7 @@ class OramaManager {
     this.contentTypesService = strapi.plugin('orama-cloud').service('contentTypesService')
     this.collectionService = strapi.plugin('orama-cloud').service('collectionsService')
     this.privateApiKey = strapi.config.get('plugin.orama-cloud.privateApiKey')
+    this.documentsTransformer = strapi.config.get('plugin.orama-cloud.documentsTransformer')
 
     this.oramaCloudManager = new CloudManager({ api_key: this.privateApiKey })
     this.DocumentActionsMap = {
@@ -89,6 +90,20 @@ class OramaManager {
     })
 
     if (entries.length > 0) {
+      if (offset === 0) {
+        const firstEntry = entries[0]
+        const transformedEntry = this.documentsTransformer?.([firstEntry])[0] || firstEntry
+        const exampleEntry = getSchemaFromAttributes({
+          attributes: collection.searchableAttributes,
+          schema: transformedEntry
+        })
+
+        await this.oramaUpdateSchema({
+          indexId: collection.indexId,
+          schema: getSchemaFromEntryStructure(exampleEntry)
+        })
+      }
+
       await this.oramaInsert({
         indexId: collection.indexId,
         entries
@@ -107,18 +122,32 @@ class OramaManager {
 
   async oramaInsert({ indexId, entries }) {
     const index = this.oramaCloudManager.index(indexId)
-    const result = await index.insert(entries)
+    const formattedData = this.documentsTransformer?.(entries) || entries
 
-    this.strapi.log.info(`INSERT: documents with id ${entries.map(({ id }) => id)} into index ${indexId}`)
+    if (!formattedData) {
+      this.strapi.log.error(`ERROR: documentsTransformer needs a return value`)
+      return false
+    }
+
+    const result = await index.insert(formattedData)
+
+    this.strapi.log.info(`INSERT: documents with id ${formattedData.map(({ id }) => id)} into index ${indexId}`)
 
     return result
   }
 
   async oramaUpdate({ indexId, entries }) {
     const index = this.oramaCloudManager.index(indexId)
-    const result = await index.update(entries)
+    const formattedData = this.documentsTransformer?.(entries) || entries
 
-    this.strapi.log.info(`UPDATE: document with id ${entries.map(({ id }) => id)} into index ${indexId}`)
+    if (!formattedData) {
+      this.strapi.log.error(`ERROR: documentsTransformer needs a return value`)
+      return false
+    }
+
+    const result = await index.update(formattedData)
+
+    this.strapi.log.info(`UPDATE: document with id ${formattedData.map(({ id }) => id)} into index ${indexId}`)
 
     return result
   }
@@ -149,19 +178,9 @@ class OramaManager {
       return
     }
 
-    const oramaSchema = getSchemaFromAttributes({
-      attributes: collection.searchableAttributes,
-      schema: collection.schema
-    })
-
     await this.updatingStarted(collection)
 
     await this.resetIndex(collection)
-
-    await this.oramaUpdateSchema({
-      indexId: collection.indexId,
-      schema: oramaSchema
-    })
 
     const { documents_count } = await this.bulkInsert(collection)
 
