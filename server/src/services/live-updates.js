@@ -1,7 +1,5 @@
 'use strict'
 
-const cron = require('./cron')
-
 module.exports = ({ strapi }) => {
   const oramaService = strapi.plugin('orama-cloud').service('oramaManagerService')
   const collectionService = strapi.plugin('orama-cloud').service('collectionsService')

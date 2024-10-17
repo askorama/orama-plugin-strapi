@@ -23,7 +23,7 @@ module.exports = ({ strapi }) => {
             task: async () => {
               strapi.log.debug(`Running cron job for collection ${id}, entity ${entity}`)
               try {
-                await oramaService.processScheduledUpdate({ id })
+                await oramaService.processScheduledUpdate(collection)
               } catch (error) {
                 strapi.log.error(error)
               }
@@ -68,8 +68,12 @@ module.exports = ({ strapi }) => {
         }
       })
 
-      async function handleUpdateStatus({ id, documentId }) {
-        await collectionService.updateWithoutHooks(id, { status: 'outdated' }, documentId)
+      async function handleUpdateStatus() {
+        await collectionService.updateWithoutHooks(collection.id, {
+          status: 'outdated'
+        }).then((updatedCollections) => {
+          oramaService.processScheduledUpdate(updatedCollections[0])
+        })
       }
     }
   }

@@ -8,7 +8,7 @@ class OramaManager {
     this.strapi = strapi
     this.contentTypesService = strapi.plugin("orama-cloud").service("contentTypesService")
     this.collectionService = strapi.plugin("orama-cloud").service("collectionsService")
-    this.privateApiKey = strapi.config.get("plugin.orama-cloud.privateApiKey")
+    this.privateApiKey = strapi.config.get("plugin::orama-cloud.privateApiKey")
 
     this.oramaCloudManager = new CloudManager({ api_key: this.privateApiKey })
     this.DocumentActionsMap = {
@@ -215,9 +215,7 @@ class OramaManager {
     this.strapi.log.debug(`Live update for ${collection.entity} with indexId ${collection.indexId} completed`)
   }
 
-  async processScheduledUpdate({ documentId }) {
-    const collection = await this.collectionService.findOne(documentId)
-
+  async processScheduledUpdate(collection) {
     if (!this.validate(collection)) {
       return
     }

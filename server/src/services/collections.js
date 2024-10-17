@@ -47,8 +47,7 @@ module.exports = ({ strapi }) => {
         data: {
           ...data,
           status: "outdated"
-        },
-        lookup: "*"
+        }
       })
 
       strapi.plugin("orama-cloud").service("oramaManagerService").afterCollectionCreationOrUpdate({ documentId: document.documentId })
