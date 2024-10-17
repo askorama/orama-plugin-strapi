@@ -2,24 +2,38 @@ import React from 'react'
 import { Box, Checkbox, Flex, Switch, Table, Thead, Tbody, Tr, Th, Td, Typography } from '@strapi/design-system'
 import { getSchemaFromAttributes, getSelectedAttributesFromSchema } from '../../../../utils/schema'
 
+const isCollection = (value) => Array.isArray(value) && value.length > 0 && typeof value[0] === 'object';
+
+const handleObjectField = (acc, fieldKey, fieldValue, relations) => {
+  if (relations.includes(fieldKey)) {
+    Object.keys(fieldValue).forEach((key) => acc.push(`${fieldKey}.${key}`));
+  }
+};
+
+const handleCollectionField = (acc, fieldKey, fieldValue, relations) => {
+  if (relations.includes(fieldKey)) {
+    acc.push(fieldKey);
+  }
+};
+
 const generateSelectableAttributesFromSchema = ({ schema, relations }) => {
+  const handlers = {
+    object: handleObjectField,
+    collection: handleCollectionField,
+  };
+
   return Object.entries(schema).reduce((acc, [fieldKey, fieldValue]) => {
-    if (Array.isArray(fieldValue) && fieldValue.length > 0 && typeof fieldValue[0] === 'object') {
-      return acc
-    } else if (typeof fieldValue === 'object') {
-      if (relations.includes(fieldKey)) {
-        Object.keys(fieldValue).forEach((key) => acc.push(`${fieldKey}.${key}`))
-      }
-    } else if (fieldValue === 'array') {
-      if (relations.includes(fieldKey)) {
-        acc.push(fieldKey)
-      }
-    } else {
-      acc.push(fieldKey)
+    const fieldType = fieldValue === 'collection' ? 'collection' : typeof fieldValue;
+
+    if (fieldType in handlers) {
+      handlers[fieldType](acc, fieldKey, fieldValue, relations);
+    } else if (!isCollection(fieldValue)) {
+      acc.push(fieldKey);
     }
-    return acc
-  }, [])
-}
+
+    return acc;
+  }, []);
+};
 
 const SchemaMapper = ({ collection, contentTypeSchema, onSchemaChange }) => {
   const [selectedAttributes, setSelectedAttributes] = React.useState(

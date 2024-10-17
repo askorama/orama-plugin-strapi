@@ -15,7 +15,7 @@ const OramaTypesMap = {
   time: 'string',
   datetime: 'string',
   enumeration: 'enum',
-  array: 'array'
+  collection: 'collection'
 }
 
 const arrayRelations = ['oneToMany', 'manyToMany']
@@ -52,7 +52,7 @@ const shouldAttributeBeIncluded = (attribute, includedRelations) => {
 const getSelectedRelations = ({ schema, relations }) => {
   return relations.reduce((acc, relation) => {
     if (relation in schema) {
-      if (schema[relation] === 'array') {
+      if (schema[relation] === 'collection') {
         acc[relation] = {
           select: '*'
         }
@@ -69,7 +69,7 @@ const getSelectedRelations = ({ schema, relations }) => {
 
 const getSelectedFieldsConfigObj = (schema) =>
   Object.entries(schema).reduce(
-    (acc, [key, value]) => (typeof value === 'object' || value === 'array' ? acc : [...acc, key]),
+    (acc, [key, value]) => (typeof value === 'object' || value === 'collection' ? acc : [...acc, key]),
     ['id']
   )
 
@@ -133,7 +133,7 @@ module.exports = ({ strapi }) => {
     getType(attribute) {
       if (attribute.type === 'relation') {
         if (arrayRelations.includes(attribute.relation)) {
-          return OramaTypesMap['array']
+          return OramaTypesMap.collection
         } else {
           return this.getContentTypeSchema({
             contentTypeId: attribute.target,
